@@ -1,5 +1,10 @@
+from typing import Tuple
+from abc import ABCMeta, abstractmethod
 
-class ObjectDetector:
+import numpy as np
+
+
+class ObjectDetector(metaclass = ABCMeta):
 
     def __init__(self, image_shape):
 
@@ -9,10 +14,11 @@ class ObjectDetector:
     @property
     def image_width(self) -> int:
         return self.image_shape[0]
-    
+
     @property
     def image_height(self)-> int:
         return self.image_shape[1]
 
-    def detect(self, image):
-        return image
+    @abstractmethod
+    def detect(self, image: np.ndarray) -> Tuple[list, list, list]:
+        pass
