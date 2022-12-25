@@ -1,3 +1,5 @@
+""" YOLOv7 ONNX detector wrapper """
+
 from typing import Tuple
 
 import onnxruntime as ort

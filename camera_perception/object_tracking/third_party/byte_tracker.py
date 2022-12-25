@@ -5,6 +5,7 @@ import os.path as osp
 import copy
 import torch
 import torch.nn.functional as F
+import cv2
 
 from .kalman_filter import KalmanFilter
 from . import matching
@@ -290,6 +291,31 @@ class BYTETracker(object):
         output_stracks = [track for track in self.tracked_stracks if track.is_activated]
 
         return output_stracks
+
+    def visualize_tracks(self, online_targets: list, frame: np.ndarray, frame_count: int):
+        online_tlwhs = []
+        online_ids = []
+        online_scores = []
+        for t in online_targets:
+            tlwh = t.tlwh
+            tid = t.track_id
+            vertical = tlwh[2] / tlwh[3] > self.aspect_ratio_thresh
+            if tlwh[2] * tlwh[3] > self.min_box_area and not vertical:
+                online_tlwhs.append(tlwh)
+                online_ids.append(tid)
+                online_scores.append(t.score)
+                tx1, ty1, tw, th = tlwh.astype(int)
+                track_str = f"{frame_count},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
+                cv2.putText(frame, str(tid), (tx1 + tw, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                # print(f"x1 {tx1}, y1 {ty1}, w{tw}, h {th} - - - imgshape {frame.shape}")
+                
+                # sub_img = frame[ty1:ty1+th, tx1:tx1 + tw]
+                # white_rect = np.ones(sub_img.shape, dtype = np.uint8) * 255
+                # cv2.rectangle(frame, (tx1, ty1), (tx1 + tw, ty1 + th), (255, 0, 0), 1)
+                cv2.circle(frame, (np.mean([tx1, tx1 + tw]).astype(int), np.mean([ty1, ty1 + th]).astype(int)), 3, (0, 0, 255), cv2.FILLED)
+                # weighted = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
+                # frame[ty1:ty1+th, tx1:tx1 + tw] = weighted
+                return track_str
 
 
 def joint_stracks(tlista, tlistb):
