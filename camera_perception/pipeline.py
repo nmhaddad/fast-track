@@ -1,7 +1,9 @@
 """ Processing pipeline with detection and tracking """
 
+from __future__ import annotations
+
 import logging
-from typing import List, Optional
+from typing import Optional, Dict, Any
 from types import TracebackType
 
 import cv2
@@ -20,8 +22,6 @@ class Pipeline:
         camera
         detector
         tracker
-        aspect_ratio_thresh
-        min_box_area
         frame_count
         frames
         results
@@ -30,17 +30,13 @@ class Pipeline:
 
     def __init__(self, 
                  data_path: str, 
-                 detector_model: str, 
-                 names: List[str], 
-                 aspect_ratio_thresh: Optional[float]= 1.6, 
-                 min_box_area: Optional[int] = 10, 
+                 detector: Dict[str, Any], 
+                 tracker: Dict[str, Any], 
                  outfile: Optional[str] = 'video.avi'):
         self.data_path = data_path
         self.camera = cv2.VideoCapture(self.data_path)
-        self.detector = YOLOv7(detector_model, names, (self.camera.get(3), self.camera.get(4)))
-        self.tracker = BYTETracker()
-        self.aspect_ratio_thresh = aspect_ratio_thresh
-        self.min_box_area = min_box_area
+        self.detector = YOLOv7(**detector, image_shape = (self.camera.get(3), self.camera.get(4)))
+        self.tracker = BYTETracker(**tracker)
         self.frame_count = 0
         self.frames = []
         self.results = []
@@ -73,11 +69,11 @@ class Pipeline:
             self.detector.visualize_detections(frame, class_ids, scores, boxes)
 
             # tracking
-            online_targets = self.tracker.update(np.array(boxes), np.array(scores), frame.shape, (self.camera.get(3), self.camera.get(4)))
-            track_str = self.tracker.visualize_tracks(online_targets, frame, self.frame_count)
+            online_targets = self.tracker.update(np.array(boxes), np.array(scores))
+            self.tracker.visualize_tracks(online_targets, frame, self.frame_count)
         
-            logging.info(track_str)
-            self.results.append(track_str)
+            # logging.info(track_str)
+            # self.results.append(track_str)
             self.frames.append(frame)
             self.frame_count += 1
 

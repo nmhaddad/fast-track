@@ -14,7 +14,8 @@ def save_video(frames: list, outfile_path: str, fps: Optional[int] = 30) -> None
             Path to write the video to
     """
     h, w, *_ = frames[0].shape
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
     outfile = cv2.VideoWriter(outfile_path, fourcc, fps, (w, h))
     for frame in frames:
         outfile.write(frame)

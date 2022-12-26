@@ -1,9 +1,40 @@
-pyyaml >= 6.0
-opencv-python >= 4.6.0.66
-onnxruntime-gpu
-onnxruntime >= 1.13.1
-torch >= 1.13.1
-scipy >= 1.9.3
-lap >= 0.4.0
-Cython >= 0.29.32
-cython-bbox >= 0.1.3
+[build-system]
+requires = ["setuptools>=61", "setuptools_scm[toml]>=7"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "camera_perception"
+description = "Object detection and tracking pipeline"
+readme = "README.md"
+keywords = [
+    "computer-vision",
+    "object-tracking",
+    "object-detection",
+    "ai",
+]
+license = { text = "MIT LICENE" }
+authors = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
+maintainers = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
+requires-python = ">=3.8"
+dependencies = [
+    "pyyaml >= 6.0",
+    "opencv-python >= 4.6.0.66",
+    "onnxruntime >= 1.13.1",
+    "torch >= 1.13.1",
+    "scipy >= 1.9.3",
+    "lap >= 0.4.0",
+    "Cython >= 0.29.32",
+    "cython-bbox >= 0.1.3",
+
+]
+dynamic = ["version"]
+classifiers = [
+    "Programming Language :: Python :: 3.8",
+]
+
+[project.optional-dependencies]
+gpu = [
+    "onnxruntime-gpu",
+
+]
+

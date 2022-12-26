@@ -16,7 +16,7 @@ class ObjectDetector(metaclass = ABCMeta):
 
         # Generate class colors for detection visualization
         rng = np.random.default_rng()
-        self.class_colors = [tuple(rng.integers(low=0, high=255, size=3)) for _ in self.names]
+        self.class_colors = [rng.integers(low=0, high=255, size=3).tolist() for _ in self.names]
 
     @property
     def image_width(self) -> int:

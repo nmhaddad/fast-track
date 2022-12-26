@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Optional
 
 import numpy as np
 import torch.nn.functional as F
@@ -141,16 +141,29 @@ class STrack(BaseTrack):
 
 
 class BYTETracker(object):
-    def __init__(self, track_thresh=0.5, track_buffer=30, match_thresh=0.8, mot20=False, frame_rate=30):
+
+    def __init__(self, 
+                 track_thresh=0.5,
+                 track_buffer=30,
+                 match_thresh=0.8,
+                 mot20=False,
+                 frame_rate=30,
+                 aspect_ratio_thresh: Optional[float]= 1.6, 
+                 min_box_area: Optional[int] = 10, ):
         self.tracked_stracks = []  # type: list[STrack]
         self.lost_stracks = []  # type: list[STrack]
         self.removed_stracks = []  # type: list[STrack]
 
         self.frame_id = 0
+
         #self.det_thresh = track_thresh
         self.det_thresh = track_thresh + 0.1
         self.track_thresh = track_thresh
         self.match_thresh = match_thresh
+        self.aspect_ratio_thresh = aspect_ratio_thresh
+        self.min_box_area = min_box_area
+        self.results = []
+
         self.mot20 = mot20
         self.track_buffer = track_buffer
         self.buffer_size = int(frame_rate / 30.0 * self.track_buffer)
@@ -304,17 +317,16 @@ class BYTETracker(object):
                 online_scores.append(t.score)
                 tx1, ty1, tw, th = tlwh.astype(int)
                 track_str = f"{frame_count},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
-                cv2.putText(frame, str(tid), (tx1 + tw, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+                cv2.putText(frame, str(tid), (tx1 + tw, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                 # print(f"x1 {tx1}, y1 {ty1}, w{tw}, h {th} - - - imgshape {frame.shape}")
                 
                 # sub_img = frame[ty1:ty1+th, tx1:tx1 + tw]
                 # white_rect = np.ones(sub_img.shape, dtype = np.uint8) * 255
                 # cv2.rectangle(frame, (tx1, ty1), (tx1 + tw, ty1 + th), (255, 0, 0), 1)
-                cv2.circle(frame, (np.mean([tx1, tx1 + tw]).astype(int), np.mean([ty1, ty1 + th]).astype(int)), 3, (0, 0, 255), cv2.FILLED)
+                cv2.circle(frame, (np.mean([tx1 + th, tx1]).astype(int), np.mean([ty1, ty1 + th]).astype(int)), 3, (255, 0, 0), cv2.FILLED)
                 # weighted = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
                 # frame[ty1:ty1+th, tx1:tx1 + tw] = weighted
-                return track_str
-
+                self.results.append(track_str)
 
 def joint_stracks(tlista, tlistb):
     exists = {}
