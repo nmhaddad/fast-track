@@ -1,6 +1,8 @@
 """ Processing pipeline with detection and tracking """
 
 import logging
+from typing import List, Optional
+from types import TracebackType
 
 import cv2
 import numpy as np
@@ -26,7 +28,13 @@ class Pipeline:
         outfile
     """
 
-    def __init__(self, data_path, detector_model, names, aspect_ratio_thresh: float = 1.6, min_box_area: int = 10, outfile: str = 'video.avi'):
+    def __init__(self, 
+                 data_path: str, 
+                 detector_model: str, 
+                 names: List[str], 
+                 aspect_ratio_thresh: Optional[float]= 1.6, 
+                 min_box_area: Optional[int] = 10, 
+                 outfile: Optional[str] = 'video.avi'):
         self.data_path = data_path
         self.camera = cv2.VideoCapture(self.data_path)
         self.detector = YOLOv7(detector_model, names, (self.camera.get(3), self.camera.get(4)))
@@ -41,7 +49,14 @@ class Pipeline:
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback) -> None:
+    def __exit__(self, 
+                 type: Optional[type[BaseException]] = None, 
+                 value: Optional[BaseException] = None, 
+                 traceback: Optional[TracebackType] = None) -> None:
+        if type or value or traceback:
+            logging.info(type)
+            logging.info(value)
+            logging.info(traceback)
         self.camera.release()
         cv2.destroyAllWindows()
 
@@ -67,4 +82,5 @@ class Pipeline:
             self.frame_count += 1
 
         if self.frames:
-            save_video(self.frames, self.outfile)
+            logging.info(f"saving output to {self.outfile}")
+            save_video(self.frames, self.outfile, fps=self.camera.get(cv2.CAP_PROP_FPS))

@@ -1,12 +1,11 @@
-import cv2
 import numpy as np
 import scipy
 import lap
 from scipy.spatial.distance import cdist
-
 from cython_bbox import bbox_overlaps as bbox_ious
+
 from . import kalman_filter
-import time
+
 
 def merge_matches(m1, m2, shape):
     O,P,Q = shape

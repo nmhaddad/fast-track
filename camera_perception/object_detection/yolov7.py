@@ -1,6 +1,6 @@
 """ YOLOv7 ONNX detector wrapper """
 
-from typing import Tuple
+from typing import Tuple, List
 
 import onnxruntime as ort
 import cv2
@@ -11,11 +11,9 @@ from .object_detector import ObjectDetector
 
 class YOLOv7(ObjectDetector):
 
-    def __init__(self, weights_path: str, names: list, image_shape: Tuple[int, int]):
-        super().__init__(image_shape)
-        self.model = None
+    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int]):
+        super().__init__(names, image_shape)
         self.weights_path = weights_path
-        self.names = names
         self.providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
         self.initialize_model()
 

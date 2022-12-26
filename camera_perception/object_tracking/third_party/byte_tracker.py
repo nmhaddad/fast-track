@@ -1,9 +1,6 @@
+from typing import Tuple
+
 import numpy as np
-from collections import deque
-import os
-import os.path as osp
-import copy
-import torch
 import torch.nn.functional as F
 import cv2
 
@@ -140,7 +137,7 @@ class STrack(BaseTrack):
         return ret
 
     def __repr__(self):
-        return 'OT_{}_({}-{})'.format(self.track_id, self.start_frame, self.end_frame)
+        return f"OT_{self.track_id}_({self.start_frame}-{self.end_frame})"
 
 
 class BYTETracker(object):
@@ -160,7 +157,7 @@ class BYTETracker(object):
         self.max_time_lost = self.buffer_size
         self.kalman_filter = KalmanFilter()
 
-    def update(self, bboxes, scores, img_info, img_size):
+    def update(self, bboxes, scores, img_info: Tuple[int, int] = None, img_size: Tuple[int, int] = None):
         self.frame_id += 1
         activated_starcks = []
         refind_stracks = []
@@ -174,9 +171,10 @@ class BYTETracker(object):
         #     output_results = output_results.cpu().numpy()
         #     scores = output_results[:, 4] * output_results[:, 5]
         #     bboxes = output_results[:, :4]  # x1y1x2y2
-        img_h, img_w = img_info[0], img_info[1]
-        scale = min(img_size[0] / float(img_h), img_size[1] / float(img_w))
-        # bboxes = bboxes / scale
+        if img_info and img_size:
+            img_h, img_w = img_info[0], img_info[1]
+            scale = min(img_size[0] / float(img_h), img_size[1] / float(img_w))
+            bboxes = bboxes / scale
 
         remain_inds = scores > self.track_thresh
         inds_low = scores > 0.1
