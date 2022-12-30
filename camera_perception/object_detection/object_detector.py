@@ -10,9 +10,10 @@ import cv2
 
 class ObjectDetector(metaclass = ABCMeta):
 
-    def __init__(self, names: List[str], image_shape: Tuple[int, int]):
+    def __init__(self, names: List[str], image_shape: Tuple[int, int], visualize: bool):
         self.names = names
         self.image_shape = image_shape
+        self.visualize = visualize
 
         # Generate class colors for detection visualization
         rng = np.random.default_rng()

@@ -10,7 +10,7 @@ from .basetrack import BaseTrack, TrackState
 
 class STrack(BaseTrack):
     shared_kalman = KalmanFilter()
-    def __init__(self, tlwh, score):
+    def __init__(self, tlwh, score, class_id):
 
         # wait activate
         self._tlwh = np.asarray(tlwh, dtype=np.float)
@@ -20,6 +20,9 @@ class STrack(BaseTrack):
 
         self.score = score
         self.tracklet_len = 0
+
+        self.class_id = class_id
+        self.class_id_history = {class_id: 1}
 
     def predict(self):
         mean_state = self.mean.copy()
@@ -65,6 +68,7 @@ class STrack(BaseTrack):
         if new_id:
             self.track_id = self.next_id()
         self.score = new_track.score
+        self.update_class_id(new_track.class_id)
 
     def update(self, new_track, frame_id):
         """
@@ -84,6 +88,14 @@ class STrack(BaseTrack):
         self.is_activated = True
 
         self.score = new_track.score
+        self.update_class_id(new_track.class_id)
+
+    def update_class_id(self, class_id: int) -> None:
+        if class_id in self.class_id_history:
+            self.class_id_history[class_id] += 1
+        else:
+            self.class_id_history[class_id] = 1
+        self.class_id = max(self.class_id_history, key=self.class_id_history.get)
 
     @property
     # @jit(nopython=True)
@@ -142,14 +154,16 @@ class STrack(BaseTrack):
 
 class BYTETracker(object):
 
-    def __init__(self, 
+    def __init__(self,
+                 names,
                  track_thresh=0.5,
                  track_buffer=30,
                  match_thresh=0.8,
                  mot20=False,
                  frame_rate=30,
                  aspect_ratio_thresh: Optional[float]= 1.6, 
-                 min_box_area: Optional[int] = 10, ):
+                 min_box_area: Optional[int] = 10,
+                 visualize: bool = True):
         self.tracked_stracks = []  # type: list[STrack]
         self.lost_stracks = []  # type: list[STrack]
         self.removed_stracks = []  # type: list[STrack]
@@ -163,6 +177,12 @@ class BYTETracker(object):
         self.aspect_ratio_thresh = aspect_ratio_thresh
         self.min_box_area = min_box_area
         self.results = []
+        self.visualize = visualize
+
+        # Generate class colors for detection visualization
+        self.names = names
+        rng = np.random.default_rng()
+        self.class_colors = [rng.integers(low=0, high=255, size=3).tolist() for _ in self.names]
 
         self.mot20 = mot20
         self.track_buffer = track_buffer
@@ -170,7 +190,7 @@ class BYTETracker(object):
         self.max_time_lost = self.buffer_size
         self.kalman_filter = KalmanFilter()
 
-    def update(self, bboxes, scores, img_info: Tuple[int, int] = None, img_size: Tuple[int, int] = None):
+    def update(self, bboxes, scores, class_ids, img_info: Tuple[int, int] = None, img_size: Tuple[int, int] = None):
         self.frame_id += 1
         activated_starcks = []
         refind_stracks = []
@@ -184,6 +204,11 @@ class BYTETracker(object):
         #     output_results = output_results.cpu().numpy()
         #     scores = output_results[:, 4] * output_results[:, 5]
         #     bboxes = output_results[:, :4]  # x1y1x2y2
+
+        bboxes = np.array(bboxes)
+        scores = np.array(scores)
+        class_ids = np.array(class_ids)
+
         if img_info and img_size:
             img_h, img_w = img_info[0], img_info[1]
             scale = min(img_size[0] / float(img_h), img_size[1] / float(img_w))
@@ -198,11 +223,13 @@ class BYTETracker(object):
         dets = bboxes[remain_inds]
         scores_keep = scores[remain_inds]
         scores_second = scores[inds_second]
+        class_ids_keep = class_ids[remain_inds]
+        class_ids_second = class_ids[inds_second]
 
         if len(dets) > 0:
             '''Detections'''
-            detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s) for
-                          (tlbr, s) in zip(dets, scores_keep)]
+            detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s, class_id) for
+                          (tlbr, s, class_id) in zip(dets, scores_keep, class_ids_keep)]
         else:
             detections = []
 
@@ -228,9 +255,11 @@ class BYTETracker(object):
             track = strack_pool[itracked]
             det = detections[idet]
             if track.state == TrackState.Tracked:
+                # TODO
                 track.update(detections[idet], self.frame_id)
                 activated_starcks.append(track)
             else:
+                # TODO
                 track.re_activate(det, self.frame_id, new_id=False)
                 refind_stracks.append(track)
 
@@ -238,8 +267,8 @@ class BYTETracker(object):
         # association the untrack to the low score detections
         if len(dets_second) > 0:
             '''Detections'''
-            detections_second = [STrack(STrack.tlbr_to_tlwh(tlbr), s) for
-                          (tlbr, s) in zip(dets_second, scores_second)]
+            detections_second = [STrack(STrack.tlbr_to_tlwh(tlbr), s, class_id) for
+                          (tlbr, s, class_id) in zip(dets_second, scores_second, class_ids_second)]
         else:
             detections_second = []
         r_tracked_stracks = [strack_pool[i] for i in u_track if strack_pool[i].state == TrackState.Tracked]
@@ -249,9 +278,11 @@ class BYTETracker(object):
             track = r_tracked_stracks[itracked]
             det = detections_second[idet]
             if track.state == TrackState.Tracked:
+                # TODO
                 track.update(det, self.frame_id)
                 activated_starcks.append(track)
             else:
+                # TODO
                 track.re_activate(det, self.frame_id, new_id=False)
                 refind_stracks.append(track)
 
@@ -268,6 +299,7 @@ class BYTETracker(object):
             dists = matching.fuse_score(dists, detections)
         matches, u_unconfirmed, u_detection = matching.linear_assignment(dists, thresh=0.7)
         for itracked, idet in matches:
+            # TODO
             unconfirmed[itracked].update(detections[idet], self.frame_id)
             activated_starcks.append(unconfirmed[itracked])
         for it in u_unconfirmed:
@@ -280,6 +312,7 @@ class BYTETracker(object):
             track = detections[inew]
             if track.score < self.det_thresh:
                 continue
+            # TODO
             track.activate(self.kalman_filter, self.frame_id)
             activated_starcks.append(track)
         """ Step 5: Update state"""
@@ -303,27 +336,26 @@ class BYTETracker(object):
 
         return output_stracks
 
-    def visualize_tracks(self, online_targets: list, frame: np.ndarray, frame_count: int):
+    def visualize_tracks(self, online_targets: list, frame: np.ndarray, thickness: int = 2):
         online_tlwhs = []
         online_ids = []
         online_scores = []
         for t in online_targets:
             tlwh = t.tlwh
             tid = t.track_id
+            cid = t.class_id
             vertical = tlwh[2] / tlwh[3] > self.aspect_ratio_thresh
             if tlwh[2] * tlwh[3] > self.min_box_area and not vertical:
                 online_tlwhs.append(tlwh)
                 online_ids.append(tid)
                 online_scores.append(t.score)
                 tx1, ty1, tw, th = tlwh.astype(int)
-                track_str = f"{frame_count},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
-                cv2.putText(frame, str(tid), (tx1 + tw, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-                # print(f"x1 {tx1}, y1 {ty1}, w{tw}, h {th} - - - imgshape {frame.shape}")
-                
+                track_str = f"{self.frame_id},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
+                cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
+                 
                 # sub_img = frame[ty1:ty1+th, tx1:tx1 + tw]
                 # white_rect = np.ones(sub_img.shape, dtype = np.uint8) * 255
-                # cv2.rectangle(frame, (tx1, ty1), (tx1 + tw, ty1 + th), (255, 0, 0), 1)
-                cv2.circle(frame, (np.mean([tx1 + th, tx1]).astype(int), np.mean([ty1, ty1 + th]).astype(int)), 3, (255, 0, 0), cv2.FILLED)
+                cv2.rectangle(frame, (tx1, ty1), (tx1 + tw, ty1 + th), self.class_colors[cid], thickness)
                 # weighted = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
                 # frame[ty1:ty1+th, tx1:tx1 + tw] = weighted
                 self.results.append(track_str)

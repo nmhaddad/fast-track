@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from types import TracebackType
 
 import cv2
-import numpy as np
 
 from .object_detection import YOLOv7
 from .object_tracking import BYTETracker
@@ -29,14 +28,15 @@ class Pipeline:
     """
 
     def __init__(self, 
-                 data_path: str, 
+                 data_path: str,
+                 names: List[str],
                  detector: Dict[str, Any], 
                  tracker: Dict[str, Any], 
                  outfile: Optional[str] = 'video.avi'):
         self.data_path = data_path
         self.camera = cv2.VideoCapture(self.data_path)
-        self.detector = YOLOv7(**detector, image_shape = (self.camera.get(3), self.camera.get(4)))
-        self.tracker = BYTETracker(**tracker)
+        self.detector = YOLOv7(**detector, names=names, image_shape = (self.camera.get(3), self.camera.get(4)))
+        self.tracker = BYTETracker(**tracker, names=names)
         self.frame_count = 0
         self.frames = []
         self.results = []
@@ -66,16 +66,17 @@ class Pipeline:
 
             # detection
             class_ids, scores, boxes = self.detector.detect(frame)
-            self.detector.visualize_detections(frame, class_ids, scores, boxes)
+            if self.detector.visualize:
+                self.detector.visualize_detections(frame, class_ids, scores, boxes)
 
             # tracking
-            online_targets = self.tracker.update(np.array(boxes), np.array(scores))
-            self.tracker.visualize_tracks(online_targets, frame, self.frame_count)
-        
-            # logging.info(track_str)
-            # self.results.append(track_str)
+            online_targets = self.tracker.update(boxes, scores, class_ids)
+            self.tracker.visualize_tracks(online_targets, frame)
+
             self.frames.append(frame)
             self.frame_count += 1
+            # if self.frame_count == 60:
+            #     break
 
         if self.frames:
             logging.info(f"saving output to {self.outfile}")

@@ -11,8 +11,8 @@ from .object_detector import ObjectDetector
 
 class YOLOv7(ObjectDetector):
 
-    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int]):
-        super().__init__(names, image_shape)
+    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool = True):
+        super().__init__(names, image_shape, visualize)
         self.weights_path = weights_path
         self.providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
         self.initialize_model()
