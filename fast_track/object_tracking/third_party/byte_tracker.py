@@ -1,4 +1,4 @@
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List, Any
 
 import numpy as np
 import torch.nn.functional as F
@@ -7,6 +7,8 @@ import cv2
 from .kalman_filter import KalmanFilter
 from . import matching
 from .basetrack import BaseTrack, TrackState
+from ..object_tracker import ObjectTracker
+
 
 class STrack(BaseTrack):
     shared_kalman = KalmanFilter()
@@ -152,18 +154,19 @@ class STrack(BaseTrack):
         return f"OT_{self.track_id}_({self.start_frame}-{self.end_frame})"
 
 
-class BYTETracker(object):
+class BYTETracker(ObjectTracker):
 
     def __init__(self,
-                 names,
-                 track_thresh=0.5,
-                 track_buffer=30,
-                 match_thresh=0.8,
-                 mot20=False,
-                 frame_rate=30,
+                 names: List[str],
+                 track_thresh: Optional[float] = 0.5,
+                 track_buffer: Optional[int] = 30,
+                 match_thresh: Optional[float] = 0.8,
+                 mot20: Optional[bool] = False,
+                 frame_rate: Optional[int] = 30,
                  aspect_ratio_thresh: Optional[float]= 1.6, 
                  min_box_area: Optional[int] = 10,
-                 visualize: bool = True):
+                 visualize: Optional[bool] = True):
+        super().__init__(names=names, visualize=visualize)
         self.tracked_stracks = []  # type: list[STrack]
         self.lost_stracks = []  # type: list[STrack]
         self.removed_stracks = []  # type: list[STrack]
@@ -177,12 +180,6 @@ class BYTETracker(object):
         self.aspect_ratio_thresh = aspect_ratio_thresh
         self.min_box_area = min_box_area
         self.results = []
-        self.visualize = visualize
-
-        # Generate class colors for detection visualization
-        self.names = names
-        rng = np.random.default_rng()
-        self.class_colors = [rng.integers(low=0, high=255, size=3).tolist() for _ in self.names]
 
         self.mot20 = mot20
         self.track_buffer = track_buffer
@@ -255,11 +252,9 @@ class BYTETracker(object):
             track = strack_pool[itracked]
             det = detections[idet]
             if track.state == TrackState.Tracked:
-                # TODO
                 track.update(detections[idet], self.frame_id)
                 activated_starcks.append(track)
             else:
-                # TODO
                 track.re_activate(det, self.frame_id, new_id=False)
                 refind_stracks.append(track)
 
@@ -278,11 +273,9 @@ class BYTETracker(object):
             track = r_tracked_stracks[itracked]
             det = detections_second[idet]
             if track.state == TrackState.Tracked:
-                # TODO
                 track.update(det, self.frame_id)
                 activated_starcks.append(track)
             else:
-                # TODO
                 track.re_activate(det, self.frame_id, new_id=False)
                 refind_stracks.append(track)
 
@@ -299,7 +292,6 @@ class BYTETracker(object):
             dists = matching.fuse_score(dists, detections)
         matches, u_unconfirmed, u_detection = matching.linear_assignment(dists, thresh=0.7)
         for itracked, idet in matches:
-            # TODO
             unconfirmed[itracked].update(detections[idet], self.frame_id)
             activated_starcks.append(unconfirmed[itracked])
         for it in u_unconfirmed:
@@ -312,7 +304,6 @@ class BYTETracker(object):
             track = detections[inew]
             if track.score < self.det_thresh:
                 continue
-            # TODO
             track.activate(self.kalman_filter, self.frame_id)
             activated_starcks.append(track)
         """ Step 5: Update state"""
@@ -336,7 +327,7 @@ class BYTETracker(object):
 
         return output_stracks
 
-    def visualize_tracks(self, online_targets: list, frame: np.ndarray, thickness: int = 2):
+    def visualize_tracks(self, online_targets: List[Any], frame: np.ndarray, thickness: Optional[int] = 2):
         online_tlwhs = []
         online_ids = []
         online_scores = []
@@ -352,13 +343,9 @@ class BYTETracker(object):
                 tx1, ty1, tw, th = tlwh.astype(int)
                 track_str = f"{self.frame_id},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
                 cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
-                 
-                # sub_img = frame[ty1:ty1+th, tx1:tx1 + tw]
-                # white_rect = np.ones(sub_img.shape, dtype = np.uint8) * 255
                 cv2.rectangle(frame, (tx1, ty1), (tx1 + tw, ty1 + th), self.class_colors[cid], thickness)
-                # weighted = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
-                # frame[ty1:ty1+th, tx1:tx1 + tw] = weighted
                 self.results.append(track_str)
+
 
 def joint_stracks(tlista, tlistb):
     exists = {}

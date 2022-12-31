@@ -3,52 +3,55 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Dict, Any, List
+from typing import Optional
 from types import TracebackType
 
 import cv2
 
-from .object_detection import YOLOv7
-from .object_tracking import BYTETracker
+from .object_detection import ObjectDetector
+from .object_tracking import ObjectTracker
 from .utils import save_video
 
 
 class Pipeline:
     """ Class that represents a camera-based detection and tracking pipeline
-    
+
     Attributes:
-        data_path
-        camera
-        detector
-        tracker
-        frame_count
-        frames
-        results
-        outfile
+        camera: opencv-python camera for reading video data.
+        detector: object detector.
+        tracker: object tracker.
+        frames: list containing processed frames.
+        outfile: path to write processed frames to.
     """
 
-    def __init__(self, 
-                 data_path: str,
-                 names: List[str],
-                 detector: Dict[str, Any], 
-                 tracker: Dict[str, Any], 
+    def __init__(self,
+                 camera: cv2.VideoCapture,
+                 detector: ObjectDetector,
+                 tracker: ObjectTracker,
                  outfile: Optional[str] = 'video.avi'):
-        self.data_path = data_path
-        self.camera = cv2.VideoCapture(self.data_path)
-        self.detector = YOLOv7(**detector, names=names, image_shape = (self.camera.get(3), self.camera.get(4)))
-        self.tracker = BYTETracker(**tracker, names=names)
-        self.frame_count = 0
+        """ Inits Pipeline class with a given object detector and tracker.
+
+        Args:
+            data_path: path to camera file or stream.
+            detector: object detector.
+            tracker: object tracker.
+            outfile: path to write processed frames to.
+        """
+        self.camera = camera
+        self.detector = detector
+        self.tracker = tracker
         self.frames = []
-        self.results = []
         self.outfile = outfile
 
     def __enter__(self):
+        """ Context manager enter. """
         return self
 
-    def __exit__(self, 
-                 type: Optional[type[BaseException]] = None, 
-                 value: Optional[BaseException] = None, 
+    def __exit__(self,
+                 type: Optional[type[BaseException]] = None,
+                 value: Optional[BaseException] = None,
                  traceback: Optional[TracebackType] = None) -> None:
+        """ Context manager exit. """
         if type or value or traceback:
             logging.info(type)
             logging.info(value)
@@ -57,6 +60,7 @@ class Pipeline:
         cv2.destroyAllWindows()
 
     def run(self) -> None:
+        """ Runs object tracking pipeline. """
 
         while True:
             ret, frame = self.camera.read()
@@ -74,9 +78,6 @@ class Pipeline:
             self.tracker.visualize_tracks(online_targets, frame)
 
             self.frames.append(frame)
-            self.frame_count += 1
-            # if self.frame_count == 60:
-            #     break
 
         if self.frames:
             logging.info(f"saving output to {self.outfile}")
