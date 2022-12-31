@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools_scm[toml]>=7"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fast_track"
+description = "Object detection and tracking pipeline"
+readme = "README.md"
+keywords = [
+    "computer-vision",
+    "object-tracking",
+    "object-detection",
+    "ai",
+]
+license = { text = "MIT LICENE" }
+authors = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
+maintainers = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy < 1.24.0", 
+    "pyyaml >= 6.0",
+    "opencv-python >= 4.6.0.66",
+    "onnxruntime >= 1.13.1",
+    "torch >= 1.13.1",
+    "scipy >= 1.9.3",
+    "lap >= 0.4.0",
+    "Cython >= 0.29.32",
+    "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
+]
+dynamic = ["version"]
+classifiers = [
+    "Programming Language :: Python :: 3.8",
+]
+
+[project.optional-dependencies]
+gpu = [
+    "onnxruntime-gpu",
+]
