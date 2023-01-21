@@ -1,6 +1,6 @@
-# Camera Perception
+# Fast-Track
 
-Object Tracking module for cameras complete with ONNX YOLOv7 detection and BYTETrack tracking
+Module for cameras complete with ONNX YOLOv7 object detection and BYTETracker object tracking
 
 Author: Nate Haddad - nhaddad2112[at]gmail[dot]com
 
@@ -15,13 +15,15 @@ Package is installable with Python 3.8+
 
 1. Example usage:
     ```
-    from camera_perception import Pipeline, YOLOv7, BYTETrack
+    from fast_track import Pipeline
+    from fast_track.object_detection import YOLOv7
+    from fast_track.object_tracking import BYTETracker
 
     with open('coco.yaml') as f:
         config = yaml.safe_load(f)
 
     camera = cv2.VideoCapture(config['data_path'])
-    detector = YOLOv7(**config['detector'], names = config['names'])
+    detector = YOLOv7(**config['detector'], names=config['names'], image_shape=(camera.get(3), camera.get(4)))
     tracker = BYTETracker(**config['tracker'], names = config['names'])
 
     with Pipeline(camera=camera, detector=detector tracker=tracker, outfile=config['outfile']) as p:
