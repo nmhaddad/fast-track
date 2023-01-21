@@ -61,7 +61,6 @@ class Pipeline:
 
     def run(self) -> None:
         """ Runs object tracking pipeline. """
-
         while True:
             ret, frame = self.camera.read()
 
@@ -74,8 +73,8 @@ class Pipeline:
                 self.detector.visualize_detections(frame, class_ids, scores, boxes)
 
             # tracking
-            online_targets = self.tracker.update(boxes, scores, class_ids)
-            self.tracker.visualize_tracks(online_targets, frame)
+            self.tracker.update(boxes, scores, class_ids)
+            self.tracker.visualize_tracks(frame)
 
             self.frames.append(frame)
 
