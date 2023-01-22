@@ -1,10 +1,10 @@
-data_path: data/IMG_2423.MOV
-outfile: video_out_tanks.mp4
+data_path: data/first_test.mp4
+outfile: video_out.mp4
 
 
 detector:
   visualize: False
-  weights_path: models/yolov7-tiny-opt5.onnx
+  weights_path: models/yolov7-tiny.onnx
 
 
 tracker:

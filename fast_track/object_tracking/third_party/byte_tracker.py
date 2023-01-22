@@ -327,19 +327,14 @@ class BYTETracker(ObjectTracker):
 
         return output_stracks
 
-    def visualize_tracks(self, online_targets: List[Any], frame: np.ndarray, thickness: Optional[int] = 2):
-        online_tlwhs = []
-        online_ids = []
-        online_scores = []
+    def visualize_tracks(self, frame: np.ndarray, thickness: Optional[int] = 2):
+        online_targets = [track for track in self.tracked_stracks if track.is_activated]
         for t in online_targets:
             tlwh = t.tlwh
             tid = t.track_id
             cid = t.class_id
             vertical = tlwh[2] / tlwh[3] > self.aspect_ratio_thresh
             if tlwh[2] * tlwh[3] > self.min_box_area and not vertical:
-                online_tlwhs.append(tlwh)
-                online_ids.append(tid)
-                online_scores.append(t.score)
                 tx1, ty1, tw, th = tlwh.astype(int)
                 track_str = f"{self.frame_id},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
                 cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
