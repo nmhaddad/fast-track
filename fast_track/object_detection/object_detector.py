@@ -17,7 +17,7 @@ class ObjectDetector(metaclass=ABCMeta):
         visualize: boolean value to visualize outputs.
     """
 
-    def __init__(self, names: List[str], image_shape: Tuple[int, int], visualize: bool):
+    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool):
         """ Init ObjectDetector objects.
 
         Args:
@@ -25,6 +25,7 @@ class ObjectDetector(metaclass=ABCMeta):
             image_shape: tuple of height and width of input images.
             visualize: boolean value to visualize outputs.
         """
+        self.weights_path = weights_path
         self.names = names
         self.image_shape = image_shape
         self.visualize = visualize
@@ -52,16 +53,37 @@ class ObjectDetector(metaclass=ABCMeta):
         return self.image_shape[1]
 
     @abstractmethod
-    def detect(self, image: np.ndarray) -> Tuple[list, list, list]:
-        """ Inference on images.
+    def postprocess(self, tensor: np.ndarray) -> Tuple[list, list, list]:
+        """ Postprocesses output.
 
         Args:
-            input image.
+            tensor: output tensor from model detect method.
 
         Returns:
-            Tuple of object detector outputs (class_ids, scores, boxes).
+            Postprocessed output as a tuple of class_ids, scores, and boxes.
         """
-        pass
+
+    @abstractmethod
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
+        """ Preprocesses input for inference.
+
+        Args:
+            image: an input image.
+
+        Returns:
+            An input tensor
+        """
+
+    @abstractmethod
+    def detect(self, image: np.ndarray) -> Tuple[list, list, list]:
+        """ Runs inference over an input image.
+
+        Args:
+            image: input image
+
+        Returns:
+            Postprocessed output.
+        """
 
     def visualize_detections(self, frame: np.ndarray, class_ids: list, scores: list, boxes: list, thickness: Optional[int] = 2) -> None:
         """ Visualizes output.

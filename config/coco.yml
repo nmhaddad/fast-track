@@ -4,7 +4,7 @@ outfile: video_out.mp4
 
 detector:
   visualize: False
-  weights_path: models/yolov7-tiny.onnx
+  weights_path: models/yolov8s.onnx
 
 
 tracker:

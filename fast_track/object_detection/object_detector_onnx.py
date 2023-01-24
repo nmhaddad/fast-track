@@ -1,48 +1,57 @@
-""" YOLOv7 ONNX detector wrapper """
+""" ObjectDetectorONNX class """
 
-from typing import Tuple, List, Optional
+from typing import Tuple, List
+from abc import ABCMeta, abstractmethod
 
 import onnxruntime as ort
-import cv2
 import numpy as np
+import cv2
 
 from .object_detector import ObjectDetector
 
 
-class YOLOv7(ObjectDetector):
-    """ YOLOv7 ONNX detector.
+class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
+    """ Class inherited by ONNX object detectors.
 
     Attributes:
-        weights_path: path to pretrained weights.
-        providers: flags for CUDA execution.
-        sessions: ORT session.
-        input_names: model input names.
-        input_shape: input shape (B,C,H,W)
-        input_height: input height.
-        input_width: input width.
-        output_names: model output names.
+        weights_path: str to weights to load model.
+        names: list of class names.
+        image_shape: shape of input images.
+        visualize: boolean value to visualize outputs.
     """
 
-    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: Optional[bool] = True):
-        """ Init YOLOv7 objects with given parameters.
+    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool):
+        """ Init ObjectDetector objects.
 
         Args:
-            weights_path. path to pretrained weights.
-            names: a list of names for classes.
-            image_shape: shape of input images.
-            visualize: bool to visualize output or not.
+            weights_path: str to weights to load model.
+            names: list of class names.
+            image_shape: tuple of height and width of input images.
+            visualize: boolean value to visualize outputs.
         """
-        super().__init__(names, image_shape, visualize)
-        self.weights_path = weights_path
+        super().__init__(weights_path, names, image_shape, visualize)
+
         self.providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
         self.session = None
         self.input_shape = None
         self.input_names = None
         self.output_names = None
+
         self.initialize_model()
 
+    @abstractmethod
+    def postprocess(self, tensor: np.ndarray) -> Tuple[list, list, list]:
+        """ Postprocesses output.
+
+        Args:
+            tensor: output tensor from ONNX session.
+
+        Returns:
+            Postprocessed output as a tuple of class_ids, scores, and boxes.
+        """
+
     def initialize_model(self) -> None:
-        """ Creates a YOLOv7 detector from an ONNX file """
+        """ Creates a YOLOvX detector from an ONNX file """
         self.session = ort.InferenceSession(self.weights_path, providers = self.providers)
 
         model_inputs = self.session.get_inputs()
@@ -55,7 +64,7 @@ class YOLOv7(ObjectDetector):
         model_outputs = self.session.get_outputs()
         self.output_names = [o.name for o in model_outputs]
 
-    def preprocess_input(self, image: np.ndarray) -> np.ndarray:
+    def preprocess(self, image: np.ndarray) -> np.ndarray:
         """ Preprocesses input for ONNX inference.
 
         Args:
@@ -70,24 +79,6 @@ class YOLOv7(ObjectDetector):
         image = image.transpose(2, 0, 1)
         input_tensor = image[np.newaxis, :, :, :].astype(np.float32)
         return input_tensor
-
-    def postprocess_output(self, tensor: np.ndarray) -> Tuple[list, list, list]:
-        """ Postprocesses output.
-
-        Args:
-            tensor: output tensor from ONNX session.
-
-        Returns:
-            Postprocessed output as a tuple of class_ids, scores, and boxes.
-        """
-        scores = tensor[0][:, -1]
-        predictions = tensor[0][:, [0, 5, 1, 2, 3, 4]]
-        class_ids = predictions[:, 1].astype(int)
-        boxes = predictions[:, 2:]
-        boxes = self.rescale_boxes(boxes)
-        if len(scores) == 0:
-            return [], [], []
-        return class_ids, scores, boxes
 
     def rescale_boxes(self, boxes: np.ndarray) -> np.ndarray:
         """ Rescales bounding boxes.
@@ -112,7 +103,7 @@ class YOLOv7(ObjectDetector):
         Returns:
             Postprocessed output.
         """
-        input_tensor = self.preprocess_input(image)
+        input_tensor = self.preprocess(image)
         output_tensor = self.session.run(self.output_names, {self.input_names[0]: input_tensor})
-        detections = self.postprocess_output(output_tensor)
+        detections = self.postprocess(output_tensor)
         return detections
