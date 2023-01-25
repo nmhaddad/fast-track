@@ -14,4 +14,4 @@ class ObjectTracker(metaclass = ABCMeta):
         # Generate class colors for detection visualization
         self.names = names
         rng = np.random.default_rng()
-        self.class_colors = [rng.integers(low=0, high=255, size=3).tolist() for _ in self.names]
+        self.class_colors = [rng.integers(low=0, high=255, size=3, dtype=np.uint8).tolist() for _ in self.names]

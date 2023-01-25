@@ -1,5 +1,5 @@
 data_path: data/nyc.mp4
-outfile: video_out.mp4
+outfile: nyc_out.mp4
 
 
 detector:

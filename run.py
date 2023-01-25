@@ -14,8 +14,6 @@ if __name__ == '__main__':
 
     camera = cv2.VideoCapture(config['data_path'])
     detector = YOLOv8(**config['detector'], names=config['names'], image_shape=(camera.get(3), camera.get(4)))
-
-
     tracker = BYTETracker(**config['tracker'], names=config['names'])
 
     with Pipeline(camera=camera, detector=detector, tracker=tracker, outfile=config['outfile']) as p:

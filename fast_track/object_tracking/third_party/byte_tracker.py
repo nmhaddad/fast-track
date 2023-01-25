@@ -337,8 +337,20 @@ class BYTETracker(ObjectTracker):
             if tlwh[2] * tlwh[3] > self.min_box_area and not vertical:
                 tx1, ty1, tw, th = tlwh.astype(int)
                 track_str = f"{self.frame_id},{tid},{tlwh[0]:.2f},{tlwh[1]:.2f},{tlwh[2]:.2f},{tlwh[3]:.2f},{t.score:.2f},-1,-1,-1\n"
+
+                # reshape bounding box to image
+                x1 = max(0, tx1)
+                y1 = max(0, ty1)
+                x2 = min(frame.shape[1], tx1 + tw)
+                y2 = min(frame.shape[0], ty1 + th)
+
                 cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
-                cv2.rectangle(frame, (tx1, ty1), (tx1 + tw, ty1 + th), self.class_colors[cid], thickness)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[cid], thickness)
+
+                det = frame[y1:y2, x1:x2]
+                det_mask = np.ones(det.shape, dtype=np.uint8) * np.uint8(self.class_colors[cid])
+                res = cv2.addWeighted(det, 0.6, det_mask, 0.4, 1.0)
+                frame[y1:y2, x1:x2] = res
                 self.results.append(track_str)
 
 
