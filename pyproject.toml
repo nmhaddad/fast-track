@@ -4,6 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fast_track"
+version = "0.2.0"
 description = "Object detection and tracking pipeline"
 readme = "README.md"
 keywords = [
