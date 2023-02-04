@@ -7,7 +7,7 @@ import cv2
 from .kalman_filter import KalmanFilter
 from . import matching
 from .basetrack import BaseTrack, TrackState
-from ..object_tracker import ObjectTracker
+from ...object_tracker import ObjectTracker
 
 
 class STrack(BaseTrack):
