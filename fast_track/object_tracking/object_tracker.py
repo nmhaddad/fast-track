@@ -1,14 +1,27 @@
 """ ObjectTracker base class """
 
 from typing import List
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 
 import numpy as np
 
 
 class ObjectTracker(metaclass = ABCMeta):
+    """ Object tracking base class.
+
+    Attributes:
+        visualize: bool to visualize tracks.
+        names: names of classes/labels.
+        class_colors: colors associates with classes/labels.
+    """
 
     def __init__(self, names: List[str], visualize: bool):
+        """ Initializes base object trackers.
+
+        Args:
+            names: list of classes/labels.
+            visualize: bool to visualize tracks.
+        """
         self.visualize = visualize
 
         # Generate class colors for detection visualization

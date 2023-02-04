@@ -48,14 +48,14 @@ class Pipeline:
         return self
 
     def __exit__(self,
-                 type: Optional[type[BaseException]] = None,
-                 value: Optional[BaseException] = None,
-                 traceback: Optional[TracebackType] = None) -> None:
+                 exc_type: Optional[type[BaseException]] = None,
+                 exc_value: Optional[BaseException] = None,
+                 exc_traceback: Optional[TracebackType] = None) -> None:
         """ Context manager exit. """
-        if type or value or traceback:
+        if exc_type or exc_value or exc_traceback:
             logging.info(type)
-            logging.info(value)
-            logging.info(traceback)
+            logging.info(exc_value)
+            logging.info(exc_traceback)
         self.camera.release()
         cv2.destroyAllWindows()
 
@@ -79,5 +79,5 @@ class Pipeline:
             self.frames.append(frame)
 
         if self.frames:
-            logging.info(f"saving output to {self.outfile}")
+            logging.info("saving output to %s", self.outfile)
             save_video(self.frames, self.outfile, fps=self.camera.get(cv2.CAP_PROP_FPS))

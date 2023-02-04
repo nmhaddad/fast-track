@@ -85,7 +85,8 @@ class ObjectDetector(metaclass=ABCMeta):
             Postprocessed output.
         """
 
-    def visualize_detections(self, frame: np.ndarray, class_ids: list, scores: list, boxes: list, thickness: Optional[int] = 2) -> None:
+    def visualize_detections(self, frame: np.ndarray, class_ids: list, scores: list, boxes: list,
+                             thickness: Optional[int] = 2) -> None:
         """ Visualizes output.
 
         Args:
@@ -95,8 +96,9 @@ class ObjectDetector(metaclass=ABCMeta):
             boxes: list of detected boxes.
             thickness: int associated with thickness of text and box lines.
         """
-        for id, score, box in zip(class_ids, scores, boxes):
-            logging.info(id, score, box)
+        for cid, score, box in zip(class_ids, scores, boxes):
+            logging.info(cid, score, box)
             x1, y1, x2, y2 = box.astype(int)
-            cv2.putText(frame, self.names[id], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[id], thickness, cv2.LINE_AA)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[id], thickness)
+            cv2.putText(frame, self.names[cid], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[id],
+                        thickness, cv2.LINE_AA)
+            cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[cid], thickness)
