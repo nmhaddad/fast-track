@@ -344,7 +344,7 @@ class BYTETracker(ObjectTracker):
                 x2 = min(frame.shape[1], tx1 + tw)
                 y2 = min(frame.shape[0], ty1 + th)
 
-                cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
+                cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
                 cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[cid], thickness)
 
                 det = frame[y1:y2, x1:x2]

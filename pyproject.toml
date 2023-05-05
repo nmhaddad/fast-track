@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fast_track"
-version = "0.2.0"
+version = "0.3.0"
 description = "Object detection and tracking pipeline"
 readme = "README.md"
 keywords = [
@@ -27,8 +27,9 @@ dependencies = [
     "lap >= 0.4.0",
     "Cython >= 0.29.32",
     "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
+    "ultralytics >= 8.0.92",
+    "super-gradients >= 3.1.1",
 ]
-dynamic = ["version"]
 classifiers = [
     "Programming Language :: Python :: 3.8",
 ]
