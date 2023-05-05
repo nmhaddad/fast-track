@@ -4,7 +4,8 @@ outfile: nyc_out.mp4
 
 detector:
   visualize: False
-  weights_path: models/yolov8l.onnx
+  weights_path: yolo_nas_l
+  pretrained: coco
 
 
 tracker:
