@@ -3,6 +3,9 @@
 ## Known Issues:
 - None
 
+## v0.3.1 - Nate Haddad, 5/6/2023
+- Clean up `YOLONAS` `detect` method
+
 ## v0.3.0 - Nate Haddad, 5/5/2023
 - Add support for `YOLO-NAS` models
 - Fix text visualization alignment

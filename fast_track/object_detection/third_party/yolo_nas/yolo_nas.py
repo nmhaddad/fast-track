@@ -42,11 +42,8 @@ class YOLONAS(ObjectDetector):
         Returns:
             Tuple[List[int], List[float], List[np.ndarray]]: Postprocessed output (class_ids, scores, boxes).
         """
-        class_ids = []
-        scores = []
-        boxes = []
         detections = next(iter(self.model.predict(image)))
-        boxes.extend(detections.prediction.bboxes_xyxy.tolist())
-        class_ids.extend(detections.prediction.labels.astype(int).tolist())
-        scores.extend(detections.prediction.confidence.tolist())
+        boxes = detections.prediction.bboxes_xyxy.tolist()
+        class_ids = detections.prediction.labels.astype(int).tolist()
+        scores = detections.prediction.confidence.tolist()
         return class_ids, scores, boxes
