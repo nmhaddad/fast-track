@@ -3,6 +3,9 @@
 ## Known Issues:
 - None
 
+## v0.3.2 - Nate Haddad, 5/9/2023
+- Enables CPU and GPU use of YOLO-NAS
+
 ## v0.3.1 - Nate Haddad, 5/6/2023
 - Clean up `YOLONAS` `detect` method
 

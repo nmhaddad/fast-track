@@ -9,6 +9,7 @@ from typing import List, Tuple
 
 import super_gradients
 import numpy as np
+import torch
 
 from ....object_detection import ObjectDetector
 
@@ -31,7 +32,9 @@ class YOLONAS(ObjectDetector):
             visualize: boolean value to visualize outputs.
         """
         super().__init__(weights_path=weights_path, names=names, image_shape=image_shape, visualize=visualize)
-        self.model = super_gradients.training.models.get(self.weights_path, pretrained_weights=pretrained).cuda()
+        self.model = super_gradients.training.models.get(self.weights_path, pretrained_weights=pretrained)
+        if torch.cuda.is_available():
+            self.model = self.model.cuda()
 
     def detect(self, image: np.ndarray) -> Tuple[List[int], List[float], List[np.ndarray]]:
         """ Runs inference over an input image.
