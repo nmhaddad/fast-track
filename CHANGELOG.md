@@ -3,6 +3,11 @@
 ## Known Issues:
 - None
 
+## v0.3.4 - Nate Haddad, 5/13/2023
+- Add GitHub Actions pipeline
+- Clean up code
+- Add simple tests
+
 ## v0.3.3 - Nate Haddad, 5/13/2023
 - Fix `py-modules` bug in `pyproject.toml`
 
