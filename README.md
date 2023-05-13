@@ -7,7 +7,7 @@ Module for object tracking pipelines with YOLO-NAS as well as runtime optimized 
 
 ## Installation:
 
-Package is installable with Python 3.8+
+Package is installable with Python 3.8, 3.9, and 3.10
 
 1. `git clone <repo> && cd <repo>`
 1. `pip install .`
