@@ -2,7 +2,7 @@
 
 Now supporting [YOLO-NAS](#license)!
 
-Module for object tracking pipelines with YOLONAS as well as runtime optimized YOLOv8 and YOLOv7 object detection and BYTETracker object tracking.
+Module for object tracking pipelines with YOLO-NAS as well as runtime optimized YOLOv8 and YOLOv7 object detection and BYTETracker object tracking.
 
 
 ## Installation:
