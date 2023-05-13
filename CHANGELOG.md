@@ -3,6 +3,11 @@
 ## Known Issues:
 - None
 
+## v0.4.0 - Nate Haddad, 5/13/2023
+- Make tracking optional
+- Refactor video writing
+- Add GitHub Actions pipeline
+
 ## v0.3.3 - Nate Haddad, 5/13/2023
 - Fix `py-modules` bug in `pyproject.toml`
 

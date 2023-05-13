@@ -4,7 +4,7 @@ import cv2
 import yaml
 
 from fast_track import Pipeline
-from fast_track.object_detection import YOLOv8, YOLONAS
+from fast_track.object_detection import YOLONAS
 from fast_track.object_tracking import BYTETracker
 
 

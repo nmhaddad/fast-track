@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fast_track"
-version = "0.3.3"
+version = "0.4.0"
 description = "Object detection and tracking pipeline"
 readme = "README.md"
 keywords = [
@@ -16,7 +16,7 @@ keywords = [
 license = { text = "MIT LICENE" }
 authors = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
 maintainers = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
-requires-python = ">=3.8"
+requires-python = ">=3.8, <3.11"
 dependencies = [
     "numpy < 1.24.0", 
     "pyyaml >= 6.0",
@@ -24,19 +24,25 @@ dependencies = [
     "onnxruntime >= 1.13.1",
     "torch >= 1.13.1",
     "scipy >= 1.9.3",
-    "lap >= 0.4.0",
-    "Cython >= 0.29.32",
-    "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
     "ultralytics >= 8.0.92",
     "super-gradients >= 3.1.1",
+    "pylint >= 2.17.4",
 ]
 classifiers = [
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+
 ]
 
 [project.optional-dependencies]
 gpu = [
     "onnxruntime-gpu",
+]
+bytetrack = [
+    "lap >= 0.4.0",
+    "Cython >= 0.29.32",
+    "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
 ]
 
 [tool.setuptools]

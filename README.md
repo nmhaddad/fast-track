@@ -11,6 +11,7 @@ Package is installable with Python 3.8+
 
 1. `git clone <repo> && cd <repo>`
 1. `pip install .`
+1. To use ByteTrack object tracking, run: `pip install .[bytetrack]`
 
 ## Running:
 
