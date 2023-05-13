@@ -3,6 +3,9 @@
 ## Known Issues:
 - None
 
+## v0.3.3 - Nate Haddad, 5/13/2023
+- Fix `py-modules` bug in `pyproject.toml`
+
 ## v0.3.2 - Nate Haddad, 5/9/2023
 - Enables CPU and GPU use of YOLO-NAS
 
