@@ -24,9 +24,6 @@ dependencies = [
     "onnxruntime >= 1.13.1",
     "torch >= 1.13.1",
     "scipy >= 1.9.3",
-    "lap >= 0.4.0",
-    "Cython >= 0.29.32",
-    "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
     "ultralytics >= 8.0.92",
     "super-gradients >= 3.1.1",
     "pylint >= 2.17.4",
@@ -38,6 +35,11 @@ classifiers = [
 [project.optional-dependencies]
 gpu = [
     "onnxruntime-gpu",
+]
+bytetrack = [
+    "lap >= 0.4.0",
+    "Cython >= 0.29.32",
+    "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
 ]
 
 [tool.setuptools]
