@@ -10,8 +10,8 @@ Module for object tracking pipelines with YOLO-NAS as well as runtime optimized 
 Package is installable with Python 3.8+
 
 1. `git clone <repo> && cd <repo>`
-1. Due to a dependency conflict with the `lap` package and `numpy`, run `pip install numpy == 1.23.0` before installing `fast_track`
 1. `pip install .`
+1. To use ByteTrack object tracking, run: `pip install .[bytetrack]`
 
 ## Running:
 

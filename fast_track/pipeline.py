@@ -10,7 +10,6 @@ import cv2
 
 from .object_detection import ObjectDetector
 from .object_tracking import ObjectTracker
-from .utils import save_video
 
 
 class Pipeline:
@@ -21,7 +20,7 @@ class Pipeline:
         detector: object detector.
         tracker: object tracker.
         frames: list containing processed frames.
-        outfile: path to write processed frames to.
+        outfile: cv2.VideoWriter object to write processed frames to.
     """
 
     def __init__(self,
@@ -40,8 +39,12 @@ class Pipeline:
         self.camera = camera
         self.detector = detector
         self.tracker = tracker
-        self.frames = []
-        self.outfile = outfile
+        # Output settings
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        fps = self.camera.get(cv2.CAP_PROP_FPS)
+        w = int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH))
+        h = int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.outfile = cv2.VideoWriter(outfile, fourcc, fps, (w, h))
 
     def __enter__(self):
         """ Context manager enter. """
@@ -57,6 +60,7 @@ class Pipeline:
             logging.info(exc_value)
             logging.info(exc_traceback)
         self.camera.release()
+        self.outfile.release()
         cv2.destroyAllWindows()
 
     def run(self) -> None:
@@ -73,11 +77,9 @@ class Pipeline:
                 self.detector.visualize_detections(frame, class_ids, scores, boxes)
 
             # tracking
-            self.tracker.update(boxes, scores, class_ids)
-            self.tracker.visualize_tracks(frame)
+            if self.tracker:
+                self.tracker.update(boxes, scores, class_ids)
+                self.tracker.visualize_tracks(frame)
 
-            self.frames.append(frame)
-
-        if self.frames:
-            logging.info("saving output to %s", self.outfile)
-            save_video(self.frames, self.outfile, fps=self.camera.get(cv2.CAP_PROP_FPS))
+            # write processed frame to output file
+            self.outfile.write(frame)
