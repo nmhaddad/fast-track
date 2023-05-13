@@ -29,6 +29,7 @@ dependencies = [
     "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
     "ultralytics >= 8.0.92",
     "super-gradients >= 3.1.1",
+    "pylint >= 2.17.4",
 ]
 classifiers = [
     "Programming Language :: Python :: 3.8",
