@@ -1,11 +1,10 @@
-data_path: data/nyc.mp4
-outfile: nyc_out.mp4
+data_path: data/nba_Trim.mp4
+outfile: nba-5-13_out.mp4
 
 
 detector:
   visualize: False
   weights_path: yolo_nas_l
-  pretrained: coco
 
 
 tracker:

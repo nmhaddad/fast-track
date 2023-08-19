@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import logging
+import os
+import tempfile
 from typing import Optional
 from types import TracebackType
 
@@ -27,7 +29,7 @@ class Pipeline:
                  camera: cv2.VideoCapture,
                  detector: ObjectDetector,
                  tracker: ObjectTracker,
-                 outfile: Optional[str] = 'video.avi'):
+                 outfile: Optional[str] = 'video.mp4'):
         """ Inits Pipeline class with a given object detector and tracker.
 
         Args:
@@ -40,11 +42,13 @@ class Pipeline:
         self.detector = detector
         self.tracker = tracker
         # Output settings
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        fps = self.camera.get(cv2.CAP_PROP_FPS)
+        fourcc = cv2.VideoWriter_fourcc(*'h264')
+        fps = int(self.camera.get(cv2.CAP_PROP_FPS))
         w = int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.outfile = cv2.VideoWriter(outfile, fourcc, fps, (w, h))
+        temp_dir = tempfile.mkdtemp()
+        self.outfile_path = os.path.join(temp_dir, outfile)
+        self.outfile = cv2.VideoWriter(self.outfile_path, fourcc, fps, (w, h))
 
     def __enter__(self):
         """ Context manager enter. """
@@ -83,3 +87,4 @@ class Pipeline:
 
             # write processed frame to output file
             self.outfile.write(frame)
+        return self.outfile_path
