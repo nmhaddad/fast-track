@@ -1,4 +1,4 @@
-""" YOLOv8 ONNX detector wrapper """
+""" YOLOv8 detector wrappers """
 
 import os
 import tempfile
@@ -29,7 +29,10 @@ class YOLOv8(ObjectDetector):
         model: super_gradients model.
     """
 
-    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool):
+    def __init__(self, weights_path: str,
+                 names: List[str],
+                 image_shape: Tuple[int, int],
+                 visualize: Optional[bool] = False):
         """ Initializes a YOLOv8 object.
 
         Args:
@@ -92,15 +95,14 @@ class YOLOv8ONNX(ObjectDetectorONNX):
                  weights_path: str,
                  names: List[str],
                  image_shape: Tuple[int, int],
-                 visualize: Optional[bool] = True,
+                 visualize: Optional[bool] = False,
                  conf_thres: Optional[float] = 0.25,
                  iou_thres: Optional[float] = 0.45,
                  classes: Optional[List[int]] = None,
                  agnostic: Optional[bool] = False,
                  multi_label: Optional[bool] = False,
                  labels: Optional[List[List[Union[int, float, torch.Tensor]]]] = (),
-                 max_det: Optional[int] = 300,
-                 nm: Optional[int] = 0):
+                 max_det: Optional[int] = 300):
         """ Init YOLOv8 objects with given parameters.
 
         Args:
@@ -115,11 +117,10 @@ class YOLOv8ONNX(ObjectDetectorONNX):
             agnostic: If True, the model is agnostic to the number of classes, and all classes will be considered
                       as one.
             multi_label:If True, each box may have multiple labels.
-            labels: A list of lists, where each inner list contains the apriori labels for a given image. The list should
-                    be in the format output by a dataloader, with each label being a tuple of
+            labels: A list of lists, where each inner list contains the apriori labels for a given image. The list
+                    should be in the format output by a dataloader, with each label being a tuple of
                     (class_index, x1, y1, x2, y2).
             max_det: The maximum number of boxes to keep after NMS.
-            nm: The number of masks output by the model.
         """
         super().__init__(weights_path, names, image_shape, visualize)
         self.conf_thresh = conf_thres
@@ -129,7 +130,6 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         self.multi_label = multi_label
         self.labels = labels
         self.max_det = max_det
-        self.nm = nm
 
     def postprocess(self, tensor: np.ndarray) -> Tuple[list, list, list]:
         """ Postprocesses output.
@@ -140,15 +140,14 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         Returns:
             Postprocessed output as a tuple of class_ids, scores, and boxes.
         """
-        predictions = ops.non_max_suppression(torch.tensor(tensor[0]), 
+        predictions = ops.non_max_suppression(torch.tensor(tensor[0]),
                                               conf_thres=self.conf_thresh,
                                               iou_thres=self.iou_thresh,
                                               classes=self.classes,
                                               agnostic=self.agnostic,
                                               multi_label=self.multi_label,
                                               labels=self.labels,
-                                              max_det=self.max_det,
-                                              nm=self.nm)
+                                              max_det=self.max_det)
         boxes = predictions[0][:, :4].int().numpy()
         class_ids = predictions[0][:, 5:6].int().flatten().tolist()
         scores = predictions[0][:, 4:5].flatten().tolist()

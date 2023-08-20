@@ -6,7 +6,7 @@ from .object_tracker import ObjectTracker
 from .third_party.bytetrack.byte_tracker import BYTETracker
 
 
-def get_tracker(tracker_name: str, names: List[str], tracker_params: dict) -> ObjectTracker:
+def get_tracker(tracker_name: str, names: List[str], tracker_params: dict = {}) -> ObjectTracker:
     """ Tracker selector.
 
     Args:
