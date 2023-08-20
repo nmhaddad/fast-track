@@ -2,7 +2,7 @@
 
 Installable Python package for object tracking pipelines with YOLO-NAS, YOLOv8, and YOLOv7 object detectors and BYTETracker object tracking.
 
-UPDATES: Now supporting YOLO-NAS! [Try it out now with Gradio.](#run-the-demo)
+UPDATES: Now supporting YOLO-NAS! [Try it out now with Gradio](#run-the-demo).
 
 ![Try out the Gradio Demo!](media/gradio_demo.png)
 

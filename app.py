@@ -76,6 +76,7 @@ with gr.Blocks() as demo:
                         "YOLOv8 N",
                         "YOLOv8 S",
                         "YOLOv8 M",
+                        "YOLOv8 L",
                         "YOLOv8 X",
                     ],
                     value="YOLO-NAS M"

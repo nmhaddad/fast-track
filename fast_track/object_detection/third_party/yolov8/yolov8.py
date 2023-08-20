@@ -18,6 +18,7 @@ MODELS = {
     "yolov8_n": "https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt",
     "yolov8_s": "https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8s.pt",
     "yolov8_m": "https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8m.pt",
+    "yolov8_l": "https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8l.pt",
     "yolov8_x": "https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8x.pt",
 }
 

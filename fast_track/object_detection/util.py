@@ -16,6 +16,7 @@ MODELS = {
     "YOLOv8 N": "yolov8_n",
     "YOLOv8 S": "yolov8_s",
     "YOLOv8 M": "yolov8_m",
+    "YOLOv8 L": "yolov8_l",
     "YOLOv8 X": "yolov8_x",
     "YOLOv8": "yolov8_custom",
     "YOLOv7": "yolov7_custom"
