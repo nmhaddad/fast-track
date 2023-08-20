@@ -54,6 +54,8 @@ Author: Nate Haddad - nhaddad2112[at]gmail[dot]com
 
 [See YOLO-NAS LICENSE.YOLONAS.md](LICENSE.YOLONAS.md)
 
+[See YOLOv8 LICENSE.YOLOv8.txt](LICENSE.YOLOv8.txt)
+
 ## References:
 [1] Jocher, Glenn; "YOLOv8 in PyTorch > ONNX > CoreML > TFLite"; https://github.com/ultralytics/; 2023; [Online]. Available: https://github.com/ultralytics/ultralytics 
 
