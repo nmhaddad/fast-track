@@ -1,28 +1,37 @@
 """ Utilities file for object detection. """
 
-import logging
 from typing import List, Tuple
 
 from .object_detector import ObjectDetector
 from .third_party.yolo_nas.yolo_nas import YOLONAS
-from .third_party.yolov8.yolov8 import YOLOv8
+from .third_party.yolov8.yolov8 import YOLOv8, YOLOv8ONNX
 from .third_party.yolov7.yolov7 import YOLOv7
+
 
 MODELS = {
     "YOLO-NAS L": "yolo_nas_l",
     "YOLO-NAS M": "yolo_nas_m",
     "YOLO-NAS S": "yolo_nas_s",
+    "YOLO-NAS": "yolo_nas_custom",
     "YOLOv8 N": "yolov8_n",
     "YOLOv8 S": "yolov8_s",
     "YOLOv8 M": "yolov8_m",
     "YOLOv8 X": "yolov8_x",
+    "YOLOv8": "yolov8_custom",
+    "YOLOv7": "yolov7_custom"
 }
 
-def get_detector(detector_name: str, names: List[str], image_shape: Tuple[int, int], detector_params: dict) -> ObjectDetector:
+
+def get_detector(weights_path: str,
+                 detector_type: str,
+                 names: List[str],
+                 image_shape: Tuple[int, int],
+                 detector_params: dict = {}) -> ObjectDetector:
     """ Detector selector.
 
     Args:
-        detector_name: name of the detector to setup.
+        weights_path: path to a weights file.
+        detector_type: type of the detector to setup.
         names: labels associated with model.
         image_shape: used for input shape for model.
         detector_params: key value parameter pairs.
@@ -30,15 +39,30 @@ def get_detector(detector_name: str, names: List[str], image_shape: Tuple[int, i
     Returns:
         An object detector.
     """
-    try:
-        detector_name = MODELS[detector_name]
-    except KeyError:
-        logging.info("Attempting to load model from provided weights")
-    if detector_name.startswith("yolo_nas"):
-        return YOLONAS(weights_path=detector_name, names=names, image_shape=image_shape, **detector_params)
-    elif detector_name.startswith("yolov8"):
-        return YOLOv8(weights_path=detector_name, names=names, image_shape=image_shape, **detector_params)
-    elif detector_name.startswith("yolov7"):
-        return YOLOv7(weights_path=detector_name, names=names, image_shape=image_shape, **detector_params)
+    if weights_path == detector_type:
+        weights_path = MODELS[detector_type]
+    detector_type = MODELS[detector_type]
+
+    if detector_type.startswith("yolo_nas"):
+        return YOLONAS(weights_path=weights_path,
+                       names=names,
+                       image_shape=image_shape,
+                       **detector_params)
+    elif detector_type.startswith("yolov8"):
+        if detector_type.endswith("custom") and weights_path.endswith(".onnx"):
+            return YOLOv8ONNX(
+                weights_path=weights_path,
+                names=names,
+                image_shape=image_shape,
+                **detector_params)
+        return YOLOv8(weights_path=weights_path,
+                      names=names,
+                      image_shape=image_shape,
+                      **detector_params)
+    elif detector_type.startswith("yolov7"):
+        return YOLOv7(weights_path=weights_path,
+                      names=names,
+                      image_shape=image_shape,
+                      **detector_params)
     else:
         raise ValueError("Detector name not found.")

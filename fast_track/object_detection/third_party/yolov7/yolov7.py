@@ -21,7 +21,10 @@ class YOLOv7(ObjectDetectorONNX):
         output_names: model output names.
     """
 
-    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: Optional[bool] = True):
+    def __init__(self, weights_path: str,
+                 names: List[str],
+                 image_shape: Tuple[int, int],
+                 visualize: Optional[bool] = False):
         """ Init YOLOv7 objects with given parameters.
 
         Args:
@@ -32,7 +35,8 @@ class YOLOv7(ObjectDetectorONNX):
         """
         super().__init__(weights_path, names, image_shape, visualize)
 
-    def postprocess(self, tensor: np.ndarray) -> Tuple[list, list, list]:
+    def postprocess(self,
+                    tensor: np.ndarray) -> Tuple[list, list, list]:
         """ Postprocesses output.
 
         Args:

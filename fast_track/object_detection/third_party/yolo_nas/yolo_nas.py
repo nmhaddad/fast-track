@@ -5,7 +5,7 @@
     fast_track/object_detection/third_party/yolo_nas/LICENSE.YOLONAS.md
 """
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 import super_gradients
 import numpy as np
@@ -21,7 +21,10 @@ class YOLONAS(ObjectDetector):
         model: super_gradients model.
     """
 
-    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool,
+    def __init__(self, weights_path: str,
+                 names: List[str],
+                 image_shape: Tuple[int, int],
+                 visualize: Optional[bool] = False,
                  pretrained='coco'):
         """ Initializes a YOLONAS object.
 
@@ -36,7 +39,8 @@ class YOLONAS(ObjectDetector):
         if torch.cuda.is_available():
             self.model = self.model.cuda()
 
-    def detect(self, image: np.ndarray) -> Tuple[List[int], List[float], List[np.ndarray]]:
+    def detect(self,
+               image: np.ndarray) -> Tuple[List[int], List[float], List[np.ndarray]]:
         """ Runs inference over an input image.
 
         Args:

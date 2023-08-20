@@ -1,9 +1,10 @@
-# Fast-Track 🚀
+# Fast-Track 🚀 Real-Time Object Tracking Pipelines
 
-Now supporting [YOLO-NAS](#license)!
+Installable Python package for object tracking pipelines with YOLO-NAS, YOLOv8, and YOLOv7 object detectors and BYTETracker object tracking.
 
-Module for object tracking pipelines with YOLO-NAS as well as runtime optimized YOLOv8 and YOLOv7 object detection and BYTETracker object tracking.
+UPDATES: Now supporting YOLO-NAS! [Try it out now with Gradio.](#run-the-demo).
 
+![Try out the Gradio Demo!](media/gradio_demo.png)
 
 ## Installation:
 
@@ -36,6 +37,12 @@ Package is installable with Python 3.8, 3.9, and 3.10
         with Pipeline(camera=camera, detector=detector, tracker=tracker, outfile=config['outfile']) as p:
             p.run()
     ```
+
+## Run the Demo
+
+Follow the installation instructions above, then install Gradio with `pip install .[gradio]`
+
+Finally, launch the app with `python app.py`
 
 ## Contact:
 Author: Nate Haddad - nhaddad2112[at]gmail[dot]com

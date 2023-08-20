@@ -3,6 +3,10 @@
 ## Known Issues:
 - None
 
+## v0.6.0 - Nate Haddad, 8/19/2023
+- Update Gradio app
+- Add support for loading custom models with demo app
+
 ## v0.5.0 - Nate Haddad, 8/19/2023
 - Add Ultralytics YOLOv8
 - Add Gradio demo with support for YOLO-NAS and YOLOv8
