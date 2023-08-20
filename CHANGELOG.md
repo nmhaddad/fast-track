@@ -3,6 +3,9 @@
 ## Known Issues:
 - None
 
+## v0.6.1 - Nate Haddad, 8/19/2023
+- Add YOLOv8 L to demo and pretrained models
+
 ## v0.6.0 - Nate Haddad, 8/19/2023
 - Update Gradio app
 - Add support for loading custom models with demo app
