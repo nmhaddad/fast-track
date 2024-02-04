@@ -1,4 +1,4 @@
-""" Run file for camera_perception """
+""" Run file for fast_track """
 
 import cv2
 import yaml

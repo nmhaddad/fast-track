@@ -30,8 +30,11 @@ class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
             visualize: boolean value to visualize outputs.
         """
         super().__init__(weights_path, names, image_shape, visualize)
-
-        self.providers = ['CUDAExecutionProvider', 'CPUExecutionProvider']
+        self.providers = [
+            'TensorrtExecutionProvider',
+            'CUDAExecutionProvider',
+            'CPUExecutionProvider'
+        ]
         self.session = None
         self.input_shape = None
         self.input_names = None
