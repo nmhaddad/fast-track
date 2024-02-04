@@ -8,7 +8,7 @@ import urllib.request
 import numpy as np
 import torch
 from ultralytics import YOLO
-from ultralytics.yolo.utils import ops
+from ultralytics.utils import ops
 
 from ...object_detector import ObjectDetector
 from ...object_detector_onnx import ObjectDetectorONNX
