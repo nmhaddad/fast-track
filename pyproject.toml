@@ -13,7 +13,7 @@ keywords = [
     "object-detection",
     "ai",
 ]
-license = { text = "MIT LICENE" }
+license = { file = "LICENSE.txt" }
 authors = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
 maintainers = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
 requires-python = ">=3.8, <3.11"
