@@ -10,7 +10,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 import torch
 
-from ....object_detection import ObjectDetector
+from ....detectors import ObjectDetector
 
 
 class YOLONAS(ObjectDetector):

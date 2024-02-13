@@ -4,8 +4,8 @@ import cv2
 import yaml
 
 from fast_track import Pipeline
-from fast_track.object_detection import YOLONAS
-from fast_track.object_tracking import BYTETracker
+from fast_track.detectors import YOLONAS
+from fast_track.trackers import BYTETracker
 
 
 if __name__ == '__main__':

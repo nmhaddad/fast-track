@@ -8,8 +8,8 @@ import yaml
 
 from fast_track import Pipeline
 from fast_track.utils import COCO_NAMES, read_names_file
-from fast_track.object_detection import get_detector
-from fast_track.object_tracking import get_tracker
+from fast_track.detectors import get_detector
+from fast_track.trackers import get_tracker
 
 
 def run_fast_track(input_video: str,
