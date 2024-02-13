@@ -7,14 +7,19 @@ from .basetrack import BaseTrack, TrackState
 
 
 class STrack(BaseTrack):
+
     shared_kalman = KalmanFilter()
+
     def __init__(self, tlwh, score, class_id):
 
         # wait activate
         self._tlwh = np.asarray(tlwh, dtype=np.float)
         self.kalman_filter = None
-        self.mean, self.covariance = None, None
+        self.mean = None
+        self.covariance = None
         self.is_activated = False
+
+        self.looks = []
 
         self.score = score
         self.tracklet_len = 0
@@ -95,6 +100,16 @@ class STrack(BaseTrack):
             self.class_id_history[class_id] = 1
         self.class_id = max(self.class_id_history, key=self.class_id_history.get)
 
+    def update_looks(self, frame_id: int, frame: np.ndarray) -> None:
+        # crop frame
+        tx1, ty1, tw, th = self._tlwh.astype(int)
+        x1 = max(0, tx1)
+        y1 = max(0, ty1)
+        x2 = min(frame.shape[1], tx1 + tw)
+        y2 = min(frame.shape[0], ty1 + th)
+        look = frame[y1:y2, x1:x2]
+        self.looks.append((frame_id, look))
+
     @property
     # @jit(nopython=True)
     def tlwh(self):
@@ -148,3 +163,14 @@ class STrack(BaseTrack):
 
     def __repr__(self):
         return f"OT_{self.track_id}_({self.start_frame}-{self.end_frame})"
+
+    def get_track_message(self):
+        track_message = super().get_track_message()
+        track_message.update(
+            {
+                "looks": self.looks,
+                "class_id": self.class_id,
+                "class_id_history": self.class_id_history,
+            }
+        )
+        return track_message

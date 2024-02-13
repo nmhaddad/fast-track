@@ -1,7 +1,7 @@
 """ ObjectTracker base class """
 
 from typing import List
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 import numpy as np
 
@@ -28,3 +28,13 @@ class ObjectTracker(metaclass=ABCMeta):
         self.names = names
         rng = np.random.default_rng()
         self.class_colors = [rng.integers(low=0, high=255, size=3, dtype=np.uint8).tolist() for _ in self.names]
+
+        self.looks = []
+
+    @abstractmethod
+    def update(self):
+        pass
+
+    @abstractmethod
+    def get_track_messages():
+        pass

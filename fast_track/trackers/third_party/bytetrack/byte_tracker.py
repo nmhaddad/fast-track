@@ -24,9 +24,10 @@ class BYTETracker(ObjectTracker):
                  min_box_area: int = 10,
                  visualize: bool = True):
         super().__init__(names=names, visualize=visualize)
-        self.tracked_stracks = []  # type: list[STrack]
-        self.lost_stracks = []  # type: list[STrack]
-        self.removed_stracks = []  # type: list[STrack]
+
+        self.tracked_stracks: List[STrack] = []
+        self.lost_stracks: List[STrack] = []
+        self.removed_stracks: List[STrack] = []
 
         self.frame_id = 0
 
@@ -44,9 +45,10 @@ class BYTETracker(ObjectTracker):
         self.max_time_lost = self.buffer_size
         self.kalman_filter = KalmanFilter()
 
-    def update(self, bboxes, scores, class_ids, img_info: Tuple[int, int] = None, img_size: Tuple[int, int] = None):
+    def update(self, bboxes, scores, class_ids, frame: np.ndarray):
+               #img_info: Tuple[int, int] = None, img_size: Tuple[int, int] = None):
         self.frame_id += 1
-        activated_starcks = []
+        activated_stracks = []
         refind_stracks = []
         lost_stracks = []
         removed_stracks = []
@@ -63,10 +65,10 @@ class BYTETracker(ObjectTracker):
         scores = np.array(scores)
         class_ids = np.array(class_ids)
 
-        if img_info and img_size:
-            img_h, img_w = img_info[0], img_info[1]
-            scale = min(img_size[0] / float(img_h), img_size[1] / float(img_w))
-            bboxes = bboxes / scale
+        # if img_info and img_size:
+        #     img_h, img_w = img_info[0], img_info[1]
+        #     scale = min(img_size[0] / float(img_h), img_size[1] / float(img_w))
+        #     bboxes = bboxes / scale
 
         remain_inds = scores > self.track_thresh
         inds_low = scores > 0.1
@@ -110,7 +112,7 @@ class BYTETracker(ObjectTracker):
             det = detections[idet]
             if track.state == TrackState.Tracked:
                 track.update(detections[idet], self.frame_id)
-                activated_starcks.append(track)
+                activated_stracks.append(track)
             else:
                 track.re_activate(det, self.frame_id, new_id=False)
                 refind_stracks.append(track)
@@ -131,7 +133,7 @@ class BYTETracker(ObjectTracker):
             det = detections_second[idet]
             if track.state == TrackState.Tracked:
                 track.update(det, self.frame_id)
-                activated_starcks.append(track)
+                activated_stracks.append(track)
             else:
                 track.re_activate(det, self.frame_id, new_id=False)
                 refind_stracks.append(track)
@@ -150,7 +152,7 @@ class BYTETracker(ObjectTracker):
         matches, u_unconfirmed, u_detection = matching.linear_assignment(dists, thresh=0.7)
         for itracked, idet in matches:
             unconfirmed[itracked].update(detections[idet], self.frame_id)
-            activated_starcks.append(unconfirmed[itracked])
+            activated_stracks.append(unconfirmed[itracked])
         for it in u_unconfirmed:
             track = unconfirmed[it]
             track.mark_removed()
@@ -162,17 +164,17 @@ class BYTETracker(ObjectTracker):
             if track.score < self.det_thresh:
                 continue
             track.activate(self.kalman_filter, self.frame_id)
-            activated_starcks.append(track)
+            track.update_looks(self.frame_id, frame)
+            activated_stracks.append(track)
         """ Step 5: Update state"""
         for track in self.lost_stracks:
             if self.frame_id - track.end_frame > self.max_time_lost:
                 track.mark_removed()
+                track.update_looks(self.frame_id, frame)
                 removed_stracks.append(track)
 
-        # print('Ramained match {} s'.format(t4-t3))
-
         self.tracked_stracks = [t for t in self.tracked_stracks if t.state == TrackState.Tracked]
-        self.tracked_stracks = joint_stracks(self.tracked_stracks, activated_starcks)
+        self.tracked_stracks = joint_stracks(self.tracked_stracks, activated_stracks)
         self.tracked_stracks = joint_stracks(self.tracked_stracks, refind_stracks)
         self.lost_stracks = sub_stracks(self.lost_stracks, self.tracked_stracks)
         self.lost_stracks.extend(lost_stracks)
@@ -183,6 +185,16 @@ class BYTETracker(ObjectTracker):
         output_stracks = [track for track in self.tracked_stracks if track.is_activated]
 
         return output_stracks
+
+    def get_track_messages(self):
+        tracked_strack_messages = [t.get_track_message() for t in self.tracked_stracks]
+        removed_strack_messages = [t.get_track_message() for t in self.removed_stracks]
+        lost_strack_messages = [t.get_track_message() for t in self.lost_stracks]
+        return {
+            "tracked_strack_messages": tracked_strack_messages,
+            "removed_strack_messages": removed_strack_messages,
+            "lost_strack_messages": lost_strack_messages,
+        }
 
     def visualize_tracks(self, frame: np.ndarray, thickness: int = 2):
         online_targets = [track for track in self.tracked_stracks if track.is_activated]
