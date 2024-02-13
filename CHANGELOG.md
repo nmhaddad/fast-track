@@ -3,6 +3,13 @@
 ## Known Issues:
 - None
 
+## v0.7.0 - Nate Haddad, 2/12/2024
+- Refactor `object_detection` and `object_tracking` modules into `detectors` and `trackers` modules
+- Refactor `YOLOV8ONNX` into `yolo_v8_onnx.py`
+
+## v0.6.2 - Nate Haddad, 2/12/2024
+- Update dependencies
+
 ## v0.6.1 - Nate Haddad, 8/19/2023
 - Add YOLOv8 L to demo and pretrained models
 

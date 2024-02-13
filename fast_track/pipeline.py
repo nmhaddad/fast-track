@@ -10,8 +10,8 @@ from types import TracebackType
 
 import cv2
 
-from .object_detection import ObjectDetector
-from .object_tracking import ObjectTracker
+from .detectors import ObjectDetector
+from .trackers import ObjectTracker
 
 
 class Pipeline:

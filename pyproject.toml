@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fast_track"
-version = "0.6.2"
+version = "0.7.0"
 description = "Object detection and tracking pipeline"
 readme = "README.md"
 keywords = [
@@ -18,7 +18,7 @@ authors = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
 maintainers = [{ name = "Nate Haddad", email = "nhaddad2112@gmail.com" }]
 requires-python = ">=3.8, <3.11"
 dependencies = [
-    "numpy==1.23.0", 
+    "numpy == 1.23.0", 
     "pyyaml == 6.0.1",
     "opencv-python == 4.9.0.80",
     "onnxruntime == 1.13.1",

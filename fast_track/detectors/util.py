@@ -4,7 +4,7 @@ from typing import List, Tuple
 
 from .object_detector import ObjectDetector
 from .third_party.yolo_nas.yolo_nas import YOLONAS
-from .third_party.yolov8.yolov8 import YOLOv8, YOLOv8ONNX
+from .third_party.yolov8 import YOLOv8, YOLOv8ONNX
 from .third_party.yolov7.yolov7 import YOLOv7
 
 
