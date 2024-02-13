@@ -38,14 +38,14 @@ class YOLOv8ONNX(ObjectDetectorONNX):
                  weights_path: str,
                  names: List[str],
                  image_shape: Tuple[int, int],
-                 visualize: Optional[bool] = False,
-                 conf_thres: Optional[float] = 0.25,
-                 iou_thres: Optional[float] = 0.45,
+                 visualize: bool = False,
+                 conf_thres: float = 0.25,
+                 iou_thres: float = 0.45,
                  classes: Optional[List[int]] = None,
-                 agnostic: Optional[bool] = False,
-                 multi_label: Optional[bool] = False,
-                 labels: Optional[List[List[Union[int, float, torch.Tensor]]]] = (),
-                 max_det: Optional[int] = 300):
+                 agnostic: bool = False,
+                 multi_label: bool = False,
+                 labels: List[List[Union[int, float, torch.Tensor]]] = (),
+                 max_det: int = 300):
         """ Init YOLOv8 objects with given parameters.
 
         Args:

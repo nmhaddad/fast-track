@@ -28,8 +28,8 @@ class Pipeline:
     def __init__(self,
                  camera: cv2.VideoCapture,
                  detector: ObjectDetector,
-                 tracker: ObjectTracker,
-                 outfile: Optional[str] = 'video.mp4'):
+                 tracker: Optional[ObjectTracker] = None,
+                 outfile: str = 'video.mp4'):
         """ Inits Pipeline class with a given object detector and tracker.
 
         Args:

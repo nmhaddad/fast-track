@@ -6,7 +6,7 @@ from abc import ABCMeta
 import numpy as np
 
 
-class ObjectTracker(metaclass = ABCMeta):
+class ObjectTracker(metaclass=ABCMeta):
     """ Object tracking base class.
 
     Attributes:

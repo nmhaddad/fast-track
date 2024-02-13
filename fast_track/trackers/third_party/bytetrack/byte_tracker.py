@@ -1,171 +1,28 @@
-from typing import Tuple, Optional, List, Any
+from typing import Tuple, List
 
 import numpy as np
-import torch.nn.functional as F
 import cv2
 
 from .kalman_filter import KalmanFilter
 from . import matching
-from .basetrack import BaseTrack, TrackState
+from .basetrack import TrackState
+from .strack import STrack
+from .utils import joint_stracks, sub_stracks, remove_duplicate_stracks
 from ...object_tracker import ObjectTracker
-
-
-class STrack(BaseTrack):
-    shared_kalman = KalmanFilter()
-    def __init__(self, tlwh, score, class_id):
-
-        # wait activate
-        self._tlwh = np.asarray(tlwh, dtype=np.float)
-        self.kalman_filter = None
-        self.mean, self.covariance = None, None
-        self.is_activated = False
-
-        self.score = score
-        self.tracklet_len = 0
-
-        self.class_id = class_id
-        self.class_id_history = {class_id: 1}
-
-    def predict(self):
-        mean_state = self.mean.copy()
-        if self.state != TrackState.Tracked:
-            mean_state[7] = 0
-        self.mean, self.covariance = self.kalman_filter.predict(mean_state, self.covariance)
-
-    @staticmethod
-    def multi_predict(stracks):
-        if len(stracks) > 0:
-            multi_mean = np.asarray([st.mean.copy() for st in stracks])
-            multi_covariance = np.asarray([st.covariance for st in stracks])
-            for i, st in enumerate(stracks):
-                if st.state != TrackState.Tracked:
-                    multi_mean[i][7] = 0
-            multi_mean, multi_covariance = STrack.shared_kalman.multi_predict(multi_mean, multi_covariance)
-            for i, (mean, cov) in enumerate(zip(multi_mean, multi_covariance)):
-                stracks[i].mean = mean
-                stracks[i].covariance = cov
-
-    def activate(self, kalman_filter, frame_id):
-        """Start a new tracklet"""
-        self.kalman_filter = kalman_filter
-        self.track_id = self.next_id()
-        self.mean, self.covariance = self.kalman_filter.initiate(self.tlwh_to_xyah(self._tlwh))
-
-        self.tracklet_len = 0
-        self.state = TrackState.Tracked
-        if frame_id == 1:
-            self.is_activated = True
-        # self.is_activated = True
-        self.frame_id = frame_id
-        self.start_frame = frame_id
-
-    def re_activate(self, new_track, frame_id, new_id=False):
-        self.mean, self.covariance = self.kalman_filter.update(
-            self.mean, self.covariance, self.tlwh_to_xyah(new_track.tlwh)
-        )
-        self.tracklet_len = 0
-        self.state = TrackState.Tracked
-        self.is_activated = True
-        self.frame_id = frame_id
-        if new_id:
-            self.track_id = self.next_id()
-        self.score = new_track.score
-        self.update_class_id(new_track.class_id)
-
-    def update(self, new_track, frame_id):
-        """
-        Update a matched track
-        :type new_track: STrack
-        :type frame_id: int
-        :type update_feature: bool
-        :return:
-        """
-        self.frame_id = frame_id
-        self.tracklet_len += 1
-
-        new_tlwh = new_track.tlwh
-        self.mean, self.covariance = self.kalman_filter.update(
-            self.mean, self.covariance, self.tlwh_to_xyah(new_tlwh))
-        self.state = TrackState.Tracked
-        self.is_activated = True
-
-        self.score = new_track.score
-        self.update_class_id(new_track.class_id)
-
-    def update_class_id(self, class_id: int) -> None:
-        if class_id in self.class_id_history:
-            self.class_id_history[class_id] += 1
-        else:
-            self.class_id_history[class_id] = 1
-        self.class_id = max(self.class_id_history, key=self.class_id_history.get)
-
-    @property
-    # @jit(nopython=True)
-    def tlwh(self):
-        """Get current position in bounding box format `(top left x, top left y,
-                width, height)`.
-        """
-        if self.mean is None:
-            return self._tlwh.copy()
-        ret = self.mean[:4].copy()
-        ret[2] *= ret[3]
-        ret[:2] -= ret[2:] / 2
-        return ret
-
-    @property
-    # @jit(nopython=True)
-    def tlbr(self):
-        """Convert bounding box to format `(min x, min y, max x, max y)`, i.e.,
-        `(top left, bottom right)`.
-        """
-        ret = self.tlwh.copy()
-        ret[2:] += ret[:2]
-        return ret
-
-    @staticmethod
-    # @jit(nopython=True)
-    def tlwh_to_xyah(tlwh):
-        """Convert bounding box to format `(center x, center y, aspect ratio,
-        height)`, where the aspect ratio is `width / height`.
-        """
-        ret = np.asarray(tlwh).copy()
-        ret[:2] += ret[2:] / 2
-        ret[2] /= ret[3]
-        return ret
-
-    def to_xyah(self):
-        return self.tlwh_to_xyah(self.tlwh)
-
-    @staticmethod
-    # @jit(nopython=True)
-    def tlbr_to_tlwh(tlbr):
-        ret = np.asarray(tlbr).copy()
-        ret[2:] -= ret[:2]
-        return ret
-
-    @staticmethod
-    # @jit(nopython=True)
-    def tlwh_to_tlbr(tlwh):
-        ret = np.asarray(tlwh).copy()
-        ret[2:] += ret[:2]
-        return ret
-
-    def __repr__(self):
-        return f"OT_{self.track_id}_({self.start_frame}-{self.end_frame})"
 
 
 class BYTETracker(ObjectTracker):
 
     def __init__(self,
                  names: List[str],
-                 track_thresh: Optional[float] = 0.5,
-                 track_buffer: Optional[int] = 30,
-                 match_thresh: Optional[float] = 0.8,
-                 mot20: Optional[bool] = False,
-                 frame_rate: Optional[int] = 30,
-                 aspect_ratio_thresh: Optional[float]= 1.6, 
-                 min_box_area: Optional[int] = 10,
-                 visualize: Optional[bool] = True):
+                 track_thresh: float = 0.5,
+                 track_buffer: int = 30,
+                 match_thresh: float = 0.8,
+                 mot20: bool = False,
+                 frame_rate: int = 30,
+                 aspect_ratio_thresh: float = 1.6,
+                 min_box_area: int = 10,
+                 visualize: bool = True):
         super().__init__(names=names, visualize=visualize)
         self.tracked_stracks = []  # type: list[STrack]
         self.lost_stracks = []  # type: list[STrack]
@@ -327,7 +184,7 @@ class BYTETracker(ObjectTracker):
 
         return output_stracks
 
-    def visualize_tracks(self, frame: np.ndarray, thickness: Optional[int] = 2):
+    def visualize_tracks(self, frame: np.ndarray, thickness: int = 2):
         online_targets = [track for track in self.tracked_stracks if track.is_activated]
         for t in online_targets:
             tlwh = t.tlwh
@@ -352,44 +209,3 @@ class BYTETracker(ObjectTracker):
                 res = cv2.addWeighted(det, 0.6, det_mask, 0.4, 1.0)
                 frame[y1:y2, x1:x2] = res
                 self.results.append(track_str)
-
-
-def joint_stracks(tlista, tlistb):
-    exists = {}
-    res = []
-    for t in tlista:
-        exists[t.track_id] = 1
-        res.append(t)
-    for t in tlistb:
-        tid = t.track_id
-        if not exists.get(tid, 0):
-            exists[tid] = 1
-            res.append(t)
-    return res
-
-
-def sub_stracks(tlista, tlistb):
-    stracks = {}
-    for t in tlista:
-        stracks[t.track_id] = t
-    for t in tlistb:
-        tid = t.track_id
-        if stracks.get(tid, 0):
-            del stracks[tid]
-    return list(stracks.values())
-
-
-def remove_duplicate_stracks(stracksa, stracksb):
-    pdist = matching.iou_distance(stracksa, stracksb)
-    pairs = np.where(pdist < 0.15)
-    dupa, dupb = list(), list()
-    for p, q in zip(*pairs):
-        timep = stracksa[p].frame_id - stracksa[p].start_frame
-        timeq = stracksb[q].frame_id - stracksb[q].start_frame
-        if timep > timeq:
-            dupb.append(q)
-        else:
-            dupa.append(p)
-    resa = [t for i, t in enumerate(stracksa) if not i in dupa]
-    resb = [t for i, t in enumerate(stracksb) if not i in dupb]
-    return resa, resb
