@@ -1,6 +1,6 @@
 """ Utilities file """
 
-from typing import Optional, List
+from typing import List
 
 import cv2
 import numpy as np
