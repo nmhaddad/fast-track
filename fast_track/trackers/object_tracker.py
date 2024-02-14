@@ -1,6 +1,6 @@
 """ ObjectTracker base class """
 
-from typing import List
+from typing import Any, Dict, List
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -27,14 +27,27 @@ class ObjectTracker(metaclass=ABCMeta):
         # Generate class colors for detection visualization
         self.names = names
         rng = np.random.default_rng()
-        self.class_colors = [rng.integers(low=0, high=255, size=3, dtype=np.uint8).tolist() for _ in self.names]
+        self.class_colors = [
+            rng.integers(low=0, high=255, size=3, dtype=np.uint8).tolist()
+            for _ in self.names
+        ]
 
         self.looks = []
 
     @abstractmethod
-    def update(self):
-        pass
+    def update(self) -> List[Any]:
+        """ Updates track states.
+
+        Returns:
+            A list of active tracks.
+        """
+        raise NotImplementedError
 
     @abstractmethod
-    def get_track_messages():
-        pass
+    def get_track_messages() -> Dict[str, Any]:
+        """ Gets a dictionary of track attributes.
+
+        Returns:
+            A dictionary of track attributes.
+        """
+        raise NotImplementedError

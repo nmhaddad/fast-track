@@ -3,6 +3,11 @@
 ## Known Issues:
 - None
 
+## v0.8.0 - Nate Haddad, 2/13/2024
+- Update `BYTETracker` with a variety of new features:
+  - add `looks` list, which adds a crop of the object to the track state when it is created and removed
+  - add track messages, for relaying information to a database or information store
+
 ## v0.7.0 - Nate Haddad, 2/12/2024
 - Refactor `object_detection` and `object_tracking` modules into `detectors` and `trackers` modules
 - Refactor `YOLOV8ONNX` into `yolo_v8_onnx.py`

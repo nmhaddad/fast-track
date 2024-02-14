@@ -85,7 +85,6 @@ class Pipeline:
                 self.tracker.update(boxes, scores, class_ids, frame)
                 self.tracker.visualize_tracks(frame)
                 messages = self.tracker.get_track_messages()
-                print(messages)
 
             # write processed frame to output file
             self.outfile.write(frame)

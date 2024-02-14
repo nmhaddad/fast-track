@@ -2,12 +2,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-
-class TrackState(object):
-    New = 0
-    Tracked = 1
-    Lost = 2
-    Removed = 3
+from .track_state import TrackState
 
 
 class BaseTrack(object):

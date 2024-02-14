@@ -1,12 +1,12 @@
-from typing import Tuple, List
+from typing import Any, Dict, List
 
 import numpy as np
 import cv2
 
 from .kalman_filter import KalmanFilter
 from . import matching
-from .basetrack import TrackState
 from .strack import STrack
+from .track_state import TrackState
 from .utils import joint_stracks, sub_stracks, remove_duplicate_stracks
 from ...object_tracker import ObjectTracker
 
@@ -46,7 +46,6 @@ class BYTETracker(ObjectTracker):
         self.kalman_filter = KalmanFilter()
 
     def update(self, bboxes, scores, class_ids, frame: np.ndarray):
-               #img_info: Tuple[int, int] = None, img_size: Tuple[int, int] = None):
         self.frame_id += 1
         activated_stracks = []
         refind_stracks = []
@@ -186,7 +185,7 @@ class BYTETracker(ObjectTracker):
 
         return output_stracks
 
-    def get_track_messages(self):
+    def get_track_messages(self) -> Dict[str, Dict[str, Any]]:
         tracked_strack_messages = [t.get_track_message() for t in self.tracked_stracks]
         removed_strack_messages = [t.get_track_message() for t in self.removed_stracks]
         lost_strack_messages = [t.get_track_message() for t in self.lost_stracks]
