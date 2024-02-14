@@ -2,7 +2,7 @@
 
 import os
 import tempfile
-from typing import Tuple, List, Optional
+from typing import Tuple, List
 import urllib.request
 
 import numpy as np
@@ -30,7 +30,7 @@ class YOLOv8(ObjectDetector):
     def __init__(self, weights_path: str,
                  names: List[str],
                  image_shape: Tuple[int, int],
-                 visualize: Optional[bool] = False):
+                 visualize: bool = False):
         """ Initializes a YOLOv8 object.
 
         Args:

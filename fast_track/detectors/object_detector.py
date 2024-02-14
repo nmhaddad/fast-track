@@ -1,7 +1,7 @@
 """ ObjectDetector base class """
 
 import logging
-from typing import Tuple, List, Optional
+from typing import Tuple, List
 from abc import ABCMeta, abstractmethod
 
 import numpy as np
@@ -65,7 +65,7 @@ class ObjectDetector(metaclass=ABCMeta):
         """
 
     def visualize_detections(self, frame: np.ndarray, class_ids: list, scores: list, boxes: list,
-                             thickness: Optional[int] = 2) -> None:
+                             thickness: int = 2) -> None:
         """ Visualizes output.
 
         Args:

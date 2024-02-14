@@ -17,7 +17,7 @@ COCO_NAMES = [
 ]
 
 
-def save_video(frames: List[np.ndarray], outfile_path: str, fps: Optional[int] = 30) -> None:
+def save_video(frames: List[np.ndarray], outfile_path: str, fps: int = 30) -> None:
     """ Saves a list of frames to a video file.
     Args:
         frames: list
