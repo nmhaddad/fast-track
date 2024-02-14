@@ -8,7 +8,7 @@ UPDATES: Now supporting YOLO-NAS! [Try it out now with Gradio](#run-the-demo).
 
 ## Installation:
 
-Package is installable with Python 3.8, 3.9, and 3.10
+Package is installable with Python 3.9, and 3.10
 
 1. `git clone <repo> && cd <repo>`
 1. `pip install .`
@@ -22,8 +22,8 @@ Package is installable with Python 3.8, 3.9, and 3.10
     import yaml
 
     from fast_track import Pipeline
-    from fast_track.object_detection import YOLONAS
-    from fast_track.object_tracking import BYTETracker
+    from fast_track.detectors import YOLONAS
+    from fast_track.trackers import BYTETracker
 
 
     if __name__ == '__main__':

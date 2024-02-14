@@ -2,12 +2,7 @@ from collections import OrderedDict
 
 import numpy as np
 
-
-class TrackState(object):
-    New = 0
-    Tracked = 1
-    Lost = 2
-    Removed = 3
+from .track_state import TrackState
 
 
 class BaseTrack(object):
@@ -51,3 +46,19 @@ class BaseTrack(object):
 
     def mark_removed(self):
         self.state = TrackState.Removed
+
+    def get_track_message(self):
+        return {
+            "count": self._count,
+            "track_id": self.track_id,
+            "is_activated": self.is_activated,
+            "state": self.state,
+            "history": self.history,
+            "features": self.features,
+            "curr_feature": self.curr_feature,
+            "score": self.score,
+            "start_frame": self.start_frame,
+            "frame_id": self.frame_id,
+            "time_since_update": self.time_since_update,
+            "location": self.location,
+        }

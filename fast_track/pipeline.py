@@ -10,8 +10,8 @@ from types import TracebackType
 
 import cv2
 
-from .object_detection import ObjectDetector
-from .object_tracking import ObjectTracker
+from .detectors import ObjectDetector
+from .trackers import ObjectTracker
 
 
 class Pipeline:
@@ -28,8 +28,8 @@ class Pipeline:
     def __init__(self,
                  camera: cv2.VideoCapture,
                  detector: ObjectDetector,
-                 tracker: ObjectTracker,
-                 outfile: Optional[str] = 'video.mp4'):
+                 tracker: Optional[ObjectTracker] = None,
+                 outfile: str = 'video.mp4'):
         """ Inits Pipeline class with a given object detector and tracker.
 
         Args:
@@ -82,7 +82,7 @@ class Pipeline:
 
             # tracking
             if self.tracker:
-                self.tracker.update(boxes, scores, class_ids)
+                self.tracker.update(boxes, scores, class_ids, frame)
                 self.tracker.visualize_tracks(frame)
 
             # write processed frame to output file

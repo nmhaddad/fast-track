@@ -1,6 +1,6 @@
 """ YOLOv7 ONNX detector wrapper """
 
-from typing import Tuple, List, Optional
+from typing import Tuple, List
 
 import numpy as np
 
@@ -24,7 +24,7 @@ class YOLOv7(ObjectDetectorONNX):
     def __init__(self, weights_path: str,
                  names: List[str],
                  image_shape: Tuple[int, int],
-                 visualize: Optional[bool] = False):
+                 visualize: bool = False):
         """ Init YOLOv7 objects with given parameters.
 
         Args:

@@ -5,12 +5,12 @@
     fast_track/object_detection/third_party/yolo_nas/LICENSE.YOLONAS.md
 """
 
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 import numpy as np
 import torch
 
-from ....object_detection import ObjectDetector
+from ....detectors import ObjectDetector
 
 
 class YOLONAS(ObjectDetector):
@@ -23,7 +23,7 @@ class YOLONAS(ObjectDetector):
     def __init__(self, weights_path: str,
                  names: List[str],
                  image_shape: Tuple[int, int],
-                 visualize: Optional[bool] = False,
+                 visualize: bool = False,
                  pretrained='coco'):
         """ Initializes a YOLONAS object.
 
