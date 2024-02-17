@@ -3,6 +3,9 @@
 ## Known Issues:
 - None
 
+## v0.9.0 - Nate Haddad, 2/17/2024
+- Add `Analyst` class
+
 ## v0.8.0 - Nate Haddad, 2/13/2024
 - Update `BYTETracker` with a variety of new features:
   - add `looks` list, which adds a crop of the object to the track state when it is created and removed

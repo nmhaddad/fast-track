@@ -10,6 +10,7 @@ from types import TracebackType
 
 import cv2
 
+from .analysts import Analyst
 from .detectors import ObjectDetector
 from .trackers import ObjectTracker
 
@@ -21,6 +22,7 @@ class Pipeline:
         camera: opencv-python camera for reading video data.
         detector: object detector.
         tracker: object tracker.
+        analyst: video analyst.
         frames: list containing processed frames.
         outfile: cv2.VideoWriter object to write processed frames to.
     """
@@ -29,6 +31,7 @@ class Pipeline:
                  camera: cv2.VideoCapture,
                  detector: ObjectDetector,
                  tracker: Optional[ObjectTracker] = None,
+                 analyst: Optional[Analyst] = None,
                  outfile: str = 'video.mp4'):
         """ Inits Pipeline class with a given object detector and tracker.
 
@@ -36,11 +39,13 @@ class Pipeline:
             data_path: path to camera file or stream.
             detector: object detector.
             tracker: object tracker.
+            analyst: video analyst.
             outfile: path to write processed frames to.
         """
         self.camera = camera
         self.detector = detector
         self.tracker = tracker
+        self.analyst = analyst
         # Output settings
         fourcc = cv2.VideoWriter_fourcc(*'h264')
         fps = int(self.camera.get(cv2.CAP_PROP_FPS))
@@ -84,7 +89,10 @@ class Pipeline:
             if self.tracker:
                 self.tracker.update(boxes, scores, class_ids, frame)
                 self.tracker.visualize_tracks(frame)
-
+                # analysis
+                if self.analyst:
+                    track_messages = self.tracker.get_track_messages()
+                    self.analyst.update(track_messages)
             # write processed frame to output file
             self.outfile.write(frame)
         return self.outfile_path
