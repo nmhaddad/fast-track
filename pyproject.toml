@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fast_track"
-version = "0.8.0"
+version = "0.9.0"
 description = "Object detection and tracking pipeline"
 readme = "README.md"
 keywords = [
@@ -43,7 +43,7 @@ bytetrack = [
     "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
 ]
 gradio = [
-    "gradio >= 3.40.1",
+    "gradio == 3.40.1",
 ]
 
 [tool.setuptools]
