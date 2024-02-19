@@ -5,6 +5,7 @@ from __future__ import annotations
 import logging
 import os
 import tempfile
+from threading import Thread
 from typing import Optional
 from types import TracebackType
 
@@ -54,6 +55,10 @@ class Pipeline:
         temp_dir = tempfile.mkdtemp()
         self.outfile_path = os.path.join(temp_dir, outfile)
         self.outfile = cv2.VideoWriter(self.outfile_path, fourcc, fps, (w, h))
+        # initialize analyst chatbox
+        if self.analyst:
+            self.chat_box = Thread(target=self.analyst.launch_chat_box)
+            self.chat_box.start()
 
     def __enter__(self):
         """ Context manager enter. """
@@ -71,6 +76,8 @@ class Pipeline:
         self.camera.release()
         self.outfile.release()
         cv2.destroyAllWindows()
+        self.chat_box.join()
+        self.tracker.db.close()
 
     def run(self) -> None:
         """ Runs object tracking pipeline. """
@@ -88,11 +95,10 @@ class Pipeline:
             # tracking
             if self.tracker:
                 self.tracker.update(boxes, scores, class_ids, frame)
+                if self.tracker.db:
+                    self.tracker.update_db()
                 self.tracker.visualize_tracks(frame)
-                # analysis
-                if self.analyst:
-                    track_messages = self.tracker.get_track_messages()
-                    self.analyst.update(track_messages)
+
             # write processed frame to output file
             self.outfile.write(frame)
         return self.outfile_path

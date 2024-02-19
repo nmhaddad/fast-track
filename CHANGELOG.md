@@ -3,6 +3,9 @@
 ## Known Issues:
 - None
 
+## v0.10.0 - Nate Haddad, 2/17/2024
+- Add `OpenAIAnalyst` class
+
 ## v0.9.0 - Nate Haddad, 2/17/2024
 - Add `Analyst` class
 

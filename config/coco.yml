@@ -1,4 +1,5 @@
 data_path: data/nba_Trim.mp4
+db_uri: sqlite:///data/nba_Trim.db
 outfile: nba-5-13_out.mp4
 
 

@@ -170,7 +170,6 @@ class STrack(BaseTrack):
             {
                 "looks": self.looks,
                 "class_id": self.class_id,
-                "class_id_history": self.class_id_history,
             }
         )
         return track_message

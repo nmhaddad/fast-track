@@ -14,7 +14,6 @@ from ...object_tracker import ObjectTracker
 class BYTETracker(ObjectTracker):
 
     def __init__(self,
-                 names: List[str],
                  track_thresh: float = 0.5,
                  track_buffer: int = 30,
                  match_thresh: float = 0.8,
@@ -22,8 +21,8 @@ class BYTETracker(ObjectTracker):
                  frame_rate: int = 30,
                  aspect_ratio_thresh: float = 1.6,
                  min_box_area: int = 10,
-                 visualize: bool = True):
-        super().__init__(names=names, visualize=visualize)
+                 **kwargs: Any):
+        super().__init__(**kwargs)
 
         self.tracked_stracks: List[STrack] = []
         self.lost_stracks: List[STrack] = []
@@ -31,7 +30,7 @@ class BYTETracker(ObjectTracker):
 
         self.frame_id = 0
 
-        #self.det_thresh = track_thresh
+        # self.det_thresh = track_thresh
         self.det_thresh = track_thresh + 0.1
         self.track_thresh = track_thresh
         self.match_thresh = match_thresh
@@ -185,15 +184,12 @@ class BYTETracker(ObjectTracker):
 
         return output_stracks
 
-    def get_track_messages(self) -> Dict[str, Dict[str, Any]]:
+    def _get_track_messages(self) -> List[Dict[str, Any]]:
         tracked_strack_messages = [t.get_track_message() for t in self.tracked_stracks]
         removed_strack_messages = [t.get_track_message() for t in self.removed_stracks]
         lost_strack_messages = [t.get_track_message() for t in self.lost_stracks]
-        return {
-            "tracked_strack_messages": tracked_strack_messages,
-            "removed_strack_messages": removed_strack_messages,
-            "lost_strack_messages": lost_strack_messages,
-        }
+        track_messages = tracked_strack_messages + removed_strack_messages + lost_strack_messages
+        return track_messages
 
     def visualize_tracks(self, frame: np.ndarray, thickness: int = 2):
         online_targets = [track for track in self.tracked_stracks if track.is_activated]
