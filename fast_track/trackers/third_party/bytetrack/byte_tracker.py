@@ -162,13 +162,12 @@ class BYTETracker(ObjectTracker):
             if track.score < self.det_thresh:
                 continue
             track.activate(self.kalman_filter, self.frame_id)
-            track.update_looks(self.frame_id, frame)
+            track.update_crops(frame)
             activated_stracks.append(track)
         """ Step 5: Update state"""
         for track in self.lost_stracks:
             if self.frame_id - track.end_frame > self.max_time_lost:
                 track.mark_removed()
-                track.update_looks(self.frame_id, frame)
                 removed_stracks.append(track)
 
         self.tracked_stracks = [t for t in self.tracked_stracks if t.state == TrackState.Tracked]
@@ -181,6 +180,13 @@ class BYTETracker(ObjectTracker):
         self.tracked_stracks, self.lost_stracks = remove_duplicate_stracks(self.tracked_stracks, self.lost_stracks)
         # get scores of lost tracks
         output_stracks = [track for track in self.tracked_stracks if track.is_activated]
+
+        # update database if db is connected
+        if self.db:
+            self.update_db()
+        # visualize tracks
+        if self.visualize:
+            self.visualize_tracks(frame)
 
         return output_stracks
 
@@ -211,7 +217,7 @@ class BYTETracker(ObjectTracker):
                 cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
                 cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[cid], thickness)
 
-                det = frame[y1:y2, x1:x2]
+                det = frame[y1:y2, x1:x2, :].copy()
                 det_mask = np.ones(det.shape, dtype=np.uint8) * np.uint8(self.class_colors[cid])
                 res = cv2.addWeighted(det, 0.6, det_mask, 0.4, 1.0)
                 frame[y1:y2, x1:x2] = res

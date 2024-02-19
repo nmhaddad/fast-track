@@ -36,7 +36,6 @@ class YOLONAS(ObjectDetector):
         super().__init__(weights_path=weights_path, names=names, image_shape=image_shape, visualize=visualize)
         import super_gradients
         self.model = super_gradients.training.models.get(self.weights_path, pretrained_weights=pretrained)
-        print(f"device: {torch.cuda.is_available()}")
         if torch.cuda.is_available():
             self.model = self.model.cuda()
 

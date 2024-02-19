@@ -19,7 +19,7 @@ class STrack(BaseTrack):
         self.covariance = None
         self.is_activated = False
 
-        self.looks = []
+        self.crops = []
 
         self.score = score
         self.tracklet_len = 0
@@ -94,21 +94,27 @@ class STrack(BaseTrack):
         self.update_class_id(new_track.class_id)
 
     def update_class_id(self, class_id: int) -> None:
-        if class_id in self.class_id_history:
-            self.class_id_history[class_id] += 1
-        else:
-            self.class_id_history[class_id] = 1
+        """ Update class id to max count of class id history.
+
+        Args:
+            class_id: class id.
+        """
+        self.class_id_history[class_id] = self.class_id_history.get(class_id, 1) + 1
         self.class_id = max(self.class_id_history, key=self.class_id_history.get)
 
-    def update_looks(self, frame_id: int, frame: np.ndarray) -> None:
-        # crop frame
+    def update_crops(self, frame: np.ndarray) -> None:
+        """ Update crops.
+
+        Args:
+            frame: frame.
+        """
         tx1, ty1, tw, th = self._tlwh.astype(int)
         x1 = max(0, tx1)
         y1 = max(0, ty1)
         x2 = min(frame.shape[1], tx1 + tw)
         y2 = min(frame.shape[0], ty1 + th)
-        look = frame[y1:y2, x1:x2]
-        self.looks.append(look)
+        crop = frame[y1:y2, x1:x2, :].copy()
+        self.crops.append(crop)
 
     @property
     # @jit(nopython=True)
@@ -168,7 +174,7 @@ class STrack(BaseTrack):
         track_message = super().get_track_message()
         track_message.update(
             {
-                "looks": self.looks,
+                "crops": self.crops,
                 "class_id": self.class_id,
             }
         )

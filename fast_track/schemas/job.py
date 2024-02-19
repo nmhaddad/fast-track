@@ -15,3 +15,7 @@ class Job(Base):
         "Track", back_populates="job",
         cascade="all, delete, delete-orphan"
     )
+    frames = relationship(
+        "Frame", back_populates="job",
+        cascade="all, delete, delete-orphan"
+    )

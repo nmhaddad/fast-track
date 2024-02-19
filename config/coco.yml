@@ -1,5 +1,4 @@
 data_path: data/nba_Trim.mp4
-db_uri: sqlite:///data/nba_Trim.db
 outfile: nba-5-13_out.mp4
 
 
@@ -17,6 +16,11 @@ tracker:
   frame_rate: 30
   aspect_ratio_thresh: 1.6 
   min_box_area: 10
+
+
+db:
+  db_uri: sqlite:///data/nba_Trim.db
+  use_gpt4v_captions: True
 
 
 names: 

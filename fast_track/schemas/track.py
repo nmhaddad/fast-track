@@ -19,8 +19,8 @@ class Track(Base):
     is_activated = Column(Boolean, nullable=False)
     state = Column(String, nullable=False)
     score = Column(Integer, nullable=False)
-    start_frame = Column(Integer, nullable=False)
-    frame_id = Column(Integer, nullable=False)
+    start_frame_number = Column(Integer, nullable=False)
+    curr_frame_number = Column(Integer, nullable=False)
     time_since_update = Column(Integer, nullable=False)
     location = Column(String, nullable=False)
     detections: Mapped[List["Detection"]] = relationship(

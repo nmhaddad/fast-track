@@ -1,14 +1,16 @@
 """ ObjectTracker base class """
 
-from typing import Any, Dict, List, Optional
 from abc import ABCMeta, abstractmethod
+import base64
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from .schemas import Base, Detection, Job, Track
+from ..schemas import Base, Detection, Job, Track, Frame
+from ..utils import generate_frame_caption, encode_image
 
 
 class ObjectTracker(metaclass=ABCMeta):
@@ -24,7 +26,8 @@ class ObjectTracker(metaclass=ABCMeta):
     def __init__(self,
                  names: List[str],
                  visualize: bool,
-                 db_uri: Optional[str] = None):
+                 db_uri: Optional[str] = None,
+                 use_gpt4v_captions: bool = False):
         """ Initializes base object trackers.
 
         Args:
@@ -42,16 +45,16 @@ class ObjectTracker(metaclass=ABCMeta):
             for _ in self.names
         ]
 
+        # database
         self.db_uri = db_uri
+        self.use_gpt4v_captions = use_gpt4v_captions
         self.db = None
         self.job_id = None
-
         if self.db_uri:
             self._connect_db()
 
-        self.count = 0
-
     def _connect_db(self) -> None:
+        """ Connects to the database and creates tables if they don't exist. """
         engine = create_engine(self.db_uri)
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
@@ -63,9 +66,10 @@ class ObjectTracker(metaclass=ABCMeta):
         self.job_id = job.job_id
 
     def update_db(self) -> None:
+        """ Updates the database with tracks and detections. """
         track_messages = self._get_track_messages()
         for track_message in track_messages:
-            looks = track_message.pop("looks")
+            crops = track_message.pop("crops")
             track_message["class_name"] = self.names[track_message.pop("class_id")]
             # check to see if track_id already exists, if so, update it, else add it
             existing_track = self.db.query(Track).filter(Track.track_id == track_message["track_id"]).first()
@@ -74,43 +78,38 @@ class ObjectTracker(metaclass=ABCMeta):
                 existing_track.is_activated = track_message["is_activated"]
                 existing_track.state = track_message["state"]
                 existing_track.score = track_message["score"]
-                existing_track.frame_id = track_message["frame_id"]
+                existing_track.curr_frame_number = track_message["curr_frame_number"]
                 existing_track.time_since_update = track_message["time_since_update"]
                 existing_track.location = track_message["location"]
                 existing_track.class_name = track_message["class_name"]
-
             else:
-                self.db.add(Track(
-                    **track_message,
-                    job_id=self.job_id
-                ))
+                self.db.add(Track(**track_message, job_id=self.job_id))
 
             # check to see if track has same number of images, if not, add the images
             existing_images = self.db.query(Detection).filter(Detection.track_id == track_message["track_id"]).all()
-            if len(existing_images) != len(looks):
-                def image_to_text(image):
-                    from transformers import AutoProcessor, Blip2ForConditionalGeneration
-                    import torch
-                    from PIL import Image
-                    device = "cuda" if torch.cuda.is_available() else "cpu"
-                    print(f"DEVICE: {device}")
-                    image = Image.fromarray(image)
-                    processor = AutoProcessor.from_pretrained("Salesforce/blip2-opt-2.7b")
-                    model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b", device_map="auto", offload_folder="offload")#, load_in_8bit=True)
-                    inputs = processor(image, return_tensors="pt").to(device, torch.float16)
-
-                    generated_ids = model.generate(**inputs, max_new_tokens=20)
-                    generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
-
-                    return generated_text
-                self.count +=1
+            if len(existing_images) != len(crops):
                 image = Detection(
-                    frame_id=track_message["frame_id"],
-                    cropped_image=image_to_text(looks[-1]),
+                    frame_number=track_message["curr_frame_number"],
+                    image_base64=base64.b64encode(crops[-1]).decode("utf-8"),
                     track_id=track_message["track_id"]
                 )
                 self.db.add(image)
-                print(self.count)
+        self.db.commit()
+
+    def add_frame(self, frame: np.ndarray, frame_number: int) -> None:
+        """ Adds a frame to the tracker.
+
+        Args:
+            frame: frame to add.
+        """
+        frame_base64 = encode_image(frame)
+        self.db.add(Frame(
+            frame_number=frame_number,
+            frame_base64=frame_base64,
+            time_created=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            gpt4v_caption=generate_frame_caption(frame_base64) if self.use_gpt4v_captions else None,
+            job_id=self.job_id
+        ))
         self.db.commit()
 
     @abstractmethod

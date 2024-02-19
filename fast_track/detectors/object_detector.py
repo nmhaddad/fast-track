@@ -76,7 +76,6 @@ class ObjectDetector(metaclass=ABCMeta):
             thickness: int associated with thickness of text and box lines.
         """
         for cid, score, box in zip(class_ids, scores, boxes):
-            logging.info(cid, score, box)
             x1, y1, x2, y2 = box.astype(int)
             cv2.putText(frame, self.names[cid], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[id],
                         thickness, cv2.LINE_AA)
