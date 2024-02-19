@@ -5,7 +5,7 @@ outfile: nba-5-13_out.mp4
 
 detector:
   visualize: False
-  weights_path: yolo_nas_l
+  weights_path: yolo_nas_s
 
 
 tracker:

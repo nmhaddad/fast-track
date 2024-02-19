@@ -49,6 +49,8 @@ class ObjectTracker(metaclass=ABCMeta):
         if self.db_uri:
             self._connect_db()
 
+        self.count = 0
+
     def _connect_db(self) -> None:
         engine = create_engine(self.db_uri)
         Base.metadata.create_all(engine)
@@ -86,12 +88,29 @@ class ObjectTracker(metaclass=ABCMeta):
             # check to see if track has same number of images, if not, add the images
             existing_images = self.db.query(Detection).filter(Detection.track_id == track_message["track_id"]).all()
             if len(existing_images) != len(looks):
+                def image_to_text(image):
+                    from transformers import AutoProcessor, Blip2ForConditionalGeneration
+                    import torch
+                    from PIL import Image
+                    device = "cuda" if torch.cuda.is_available() else "cpu"
+                    print(f"DEVICE: {device}")
+                    image = Image.fromarray(image)
+                    processor = AutoProcessor.from_pretrained("Salesforce/blip2-opt-2.7b")
+                    model = Blip2ForConditionalGeneration.from_pretrained("Salesforce/blip2-opt-2.7b", device_map="auto", offload_folder="offload")#, load_in_8bit=True)
+                    inputs = processor(image, return_tensors="pt").to(device, torch.float16)
+
+                    generated_ids = model.generate(**inputs, max_new_tokens=20)
+                    generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0].strip()
+
+                    return generated_text
+                self.count +=1
                 image = Detection(
                     frame_id=track_message["frame_id"],
-                    cropped_image="image",  # replace with image_to_text(looks[-1])
+                    cropped_image=image_to_text(looks[-1]),
                     track_id=track_message["track_id"]
                 )
                 self.db.add(image)
+                print(self.count)
         self.db.commit()
 
     @abstractmethod

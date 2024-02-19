@@ -3,11 +3,8 @@
 ## Known Issues:
 - None
 
-## v0.10.0 - Nate Haddad, 2/17/2024
-- Add `OpenAIAnalyst` class
-
-## v0.9.0 - Nate Haddad, 2/17/2024
-- Add `Analyst` class
+## v0.9.0 - Nate Haddad, 2/19/2024
+- Add database option to tracker.
 
 ## v0.8.0 - Nate Haddad, 2/13/2024
 - Update `BYTETracker` with a variety of new features:

@@ -6,7 +6,6 @@ import yaml
 from fast_track import Pipeline
 from fast_track.detectors import YOLONAS
 from fast_track.trackers import BYTETracker
-from fast_track.analysts import OpenAIAnalyst
 
 
 with open('config/coco.yml', 'r') as f:
@@ -15,7 +14,6 @@ with open('config/coco.yml', 'r') as f:
 camera = cv2.VideoCapture(config['data_path'])
 detector = YOLONAS(**config['detector'], names=config['names'], image_shape=(camera.get(3), camera.get(4)))
 tracker = BYTETracker(**config['tracker'], names=config['names'], db_uri=config["db_uri"])
-analyst = OpenAIAnalyst(db_uri=config["db_uri"])
 
-with Pipeline(camera=camera, detector=detector, tracker=tracker, analyst=analyst, outfile=config['outfile']) as p:
+with Pipeline(camera=camera, detector=detector, tracker=tracker, outfile=config['outfile']) as p:
     p.run()

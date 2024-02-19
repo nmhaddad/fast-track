@@ -108,7 +108,7 @@ class STrack(BaseTrack):
         x2 = min(frame.shape[1], tx1 + tw)
         y2 = min(frame.shape[0], ty1 + th)
         look = frame[y1:y2, x1:x2]
-        self.looks.append((frame_id, look))
+        self.looks.append(look)
 
     @property
     # @jit(nopython=True)

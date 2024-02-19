@@ -5,13 +5,11 @@ from __future__ import annotations
 import logging
 import os
 import tempfile
-from threading import Thread
 from typing import Optional
 from types import TracebackType
 
 import cv2
 
-from .analysts import Analyst
 from .detectors import ObjectDetector
 from .trackers import ObjectTracker
 
@@ -32,7 +30,6 @@ class Pipeline:
                  camera: cv2.VideoCapture,
                  detector: ObjectDetector,
                  tracker: Optional[ObjectTracker] = None,
-                 analyst: Optional[Analyst] = None,
                  outfile: str = 'video.mp4'):
         """ Inits Pipeline class with a given object detector and tracker.
 
@@ -46,7 +43,6 @@ class Pipeline:
         self.camera = camera
         self.detector = detector
         self.tracker = tracker
-        self.analyst = analyst
         # Output settings
         fourcc = cv2.VideoWriter_fourcc(*'h264')
         fps = int(self.camera.get(cv2.CAP_PROP_FPS))
@@ -55,10 +51,6 @@ class Pipeline:
         temp_dir = tempfile.mkdtemp()
         self.outfile_path = os.path.join(temp_dir, outfile)
         self.outfile = cv2.VideoWriter(self.outfile_path, fourcc, fps, (w, h))
-        # initialize analyst chatbox
-        if self.analyst:
-            self.chat_box = Thread(target=self.analyst.launch_chat_box)
-            self.chat_box.start()
 
     def __enter__(self):
         """ Context manager enter. """
@@ -76,7 +68,6 @@ class Pipeline:
         self.camera.release()
         self.outfile.release()
         cv2.destroyAllWindows()
-        self.chat_box.join()
         self.tracker.db.close()
 
     def run(self) -> None:
