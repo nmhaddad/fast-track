@@ -13,6 +13,7 @@ import cv2
 
 from .detectors import ObjectDetector
 from .trackers import ObjectTracker
+from .database import Database
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -25,7 +26,7 @@ class Pipeline:
         camera: opencv-python camera for reading video data.
         detector: object detector.
         tracker: object tracker.
-        analyst: video analyst.
+        database: database to store information about tracks and detections.
         frames: list containing processed frames.
         outfile: cv2.VideoWriter object to write processed frames to.
     """
@@ -34,6 +35,7 @@ class Pipeline:
                  camera: cv2.VideoCapture,
                  detector: ObjectDetector,
                  tracker: Optional[ObjectTracker] = None,
+                 database: Optional[Database] = None,
                  outfile: Optional[str] = None):
         """ Inits Pipeline class with a given object detector and tracker.
 
@@ -41,12 +43,13 @@ class Pipeline:
             data_path: path to camera file or stream.
             detector: object detector.
             tracker: object tracker.
-            analyst: video analyst.
+            database: database to store information about tracks and detections.
             outfile: path to write processed frames to.
         """
         self.camera = camera
         self.detector = detector
         self.tracker = tracker
+        self.database = database
         # Output settings
         fourcc = cv2.VideoWriter_fourcc(*'avc1')
         fps = int(self.camera.get(cv2.CAP_PROP_FPS))
@@ -83,10 +86,10 @@ class Pipeline:
         self.outfile.release()
         cv2.destroyAllWindows()
         logger.info("__exit__ | Camera and output file released.")
-        if self.tracker and self.tracker.db:
+        if self.database:
             logger.info("__exit__ | Closing database connection.")
-            self.tracker.db.commit()
-            self.tracker.db.close()
+            self.database.commit()
+            self.database.close()
             logger.info("__exit__ | Database connection closed.")
 
     def run(self) -> None:
@@ -98,9 +101,9 @@ class Pipeline:
                 break
 
             # add frame to database
-            if self.frame_count % self.interval_frames == 0 and self.tracker.db:
+            if self.frame_count % self.interval_frames == 0 and self.database:
                 logger.info(f"run | Adding frame {self.frame_count} to database.")
-                Thread(target=self.tracker.add_frame, args=(frame, self.frame_count)).start()
+                Thread(target=self.database.add_frame, args=(frame, self.frame_count)).start()
 
             # detection
             class_ids, scores, boxes = self.detector.detect(frame)
@@ -109,7 +112,9 @@ class Pipeline:
 
             # tracking (will also update and visualize tracks if configured)
             if self.tracker:
-                self.tracker.update(boxes, scores, class_ids, frame)
+                track_messages = self.tracker.update(boxes, scores, class_ids, frame)
+                if self.database:
+                    self.database.update(track_messages)
 
             # write processed frame to output file
             self.outfile.write(frame)

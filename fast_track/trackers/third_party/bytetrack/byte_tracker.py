@@ -181,16 +181,18 @@ class BYTETracker(ObjectTracker):
         # get scores of lost tracks
         output_stracks = [track for track in self.tracked_stracks if track.is_activated]
 
-        # update database if db is connected
-        if self.db:
-            self.update_db()
         # visualize tracks
         if self.visualize:
             self.visualize_tracks(frame)
 
-        return output_stracks
+        return self._get_track_messages()
 
     def _get_track_messages(self) -> List[Dict[str, Any]]:
+        """ Gets a list of track messages.
+
+        Returns:
+            A list of track messages.
+        """
         tracked_strack_messages = [t.get_track_message() for t in self.tracked_stracks]
         removed_strack_messages = [t.get_track_message() for t in self.removed_stracks]
         lost_strack_messages = [t.get_track_message() for t in self.lost_stracks]
