@@ -63,6 +63,7 @@ class ObjectDetector(metaclass=ABCMeta):
         Returns:
             Postprocessed output.
         """
+        raise NotImplementedError
 
     def visualize_detections(self, frame: np.ndarray, class_ids: list, scores: list, boxes: list,
                              thickness: int = 2) -> None:
@@ -76,8 +77,21 @@ class ObjectDetector(metaclass=ABCMeta):
             thickness: int associated with thickness of text and box lines.
         """
         for cid, score, box in zip(class_ids, scores, boxes):
-            logging.info(cid, score, box)
             x1, y1, x2, y2 = box.astype(int)
             cv2.putText(frame, self.names[cid], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[id],
                         thickness, cv2.LINE_AA)
             cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[cid], thickness)
+
+    def __call__(self, image: np.ndarray) -> Tuple[list, list, list]:
+        """ Runs inference over an input image.
+
+        Args:
+            image: input image
+
+        Returns:
+            Postprocessed output.
+        """
+        class_ids, scores, boxes = self.detect(image)
+        if self.visualize:
+            self.visualize_detections(image, class_ids, scores, boxes)
+        return class_ids, scores, boxes

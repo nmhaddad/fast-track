@@ -5,8 +5,7 @@ import cv2
 
 from .kalman_filter import KalmanFilter
 from . import matching
-from .strack import STrack
-from .track_state import TrackState
+from .dtypes import STrack, TrackState
 from .utils import joint_stracks, sub_stracks, remove_duplicate_stracks
 from ...object_tracker import ObjectTracker
 
@@ -14,7 +13,6 @@ from ...object_tracker import ObjectTracker
 class BYTETracker(ObjectTracker):
 
     def __init__(self,
-                 names: List[str],
                  track_thresh: float = 0.5,
                  track_buffer: int = 30,
                  match_thresh: float = 0.8,
@@ -22,8 +20,8 @@ class BYTETracker(ObjectTracker):
                  frame_rate: int = 30,
                  aspect_ratio_thresh: float = 1.6,
                  min_box_area: int = 10,
-                 visualize: bool = True):
-        super().__init__(names=names, visualize=visualize)
+                 **kwargs: Any):
+        super().__init__(**kwargs)
 
         self.tracked_stracks: List[STrack] = []
         self.lost_stracks: List[STrack] = []
@@ -31,7 +29,7 @@ class BYTETracker(ObjectTracker):
 
         self.frame_id = 0
 
-        #self.det_thresh = track_thresh
+        # self.det_thresh = track_thresh
         self.det_thresh = track_thresh + 0.1
         self.track_thresh = track_thresh
         self.match_thresh = match_thresh
@@ -163,13 +161,12 @@ class BYTETracker(ObjectTracker):
             if track.score < self.det_thresh:
                 continue
             track.activate(self.kalman_filter, self.frame_id)
-            track.update_looks(self.frame_id, frame)
+            track.update_crops(frame)
             activated_stracks.append(track)
         """ Step 5: Update state"""
         for track in self.lost_stracks:
             if self.frame_id - track.end_frame > self.max_time_lost:
                 track.mark_removed()
-                track.update_looks(self.frame_id, frame)
                 removed_stracks.append(track)
 
         self.tracked_stracks = [t for t in self.tracked_stracks if t.state == TrackState.Tracked]
@@ -183,17 +180,23 @@ class BYTETracker(ObjectTracker):
         # get scores of lost tracks
         output_stracks = [track for track in self.tracked_stracks if track.is_activated]
 
-        return output_stracks
+        # visualize tracks
+        if self.visualize:
+            self.visualize_tracks(frame)
 
-    def get_track_messages(self) -> Dict[str, Dict[str, Any]]:
+        return self._get_track_messages()
+
+    def _get_track_messages(self) -> List[Dict[str, Any]]:
+        """ Gets a list of track messages.
+
+        Returns:
+            A list of track messages.
+        """
         tracked_strack_messages = [t.get_track_message() for t in self.tracked_stracks]
         removed_strack_messages = [t.get_track_message() for t in self.removed_stracks]
         lost_strack_messages = [t.get_track_message() for t in self.lost_stracks]
-        return {
-            "tracked_strack_messages": tracked_strack_messages,
-            "removed_strack_messages": removed_strack_messages,
-            "lost_strack_messages": lost_strack_messages,
-        }
+        track_messages = tracked_strack_messages + removed_strack_messages + lost_strack_messages
+        return track_messages
 
     def visualize_tracks(self, frame: np.ndarray, thickness: int = 2):
         online_targets = [track for track in self.tracked_stracks if track.is_activated]
@@ -215,7 +218,7 @@ class BYTETracker(ObjectTracker):
                 cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
                 cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[cid], thickness)
 
-                det = frame[y1:y2, x1:x2]
+                det = frame[y1:y2, x1:x2, :].copy()
                 det_mask = np.ones(det.shape, dtype=np.uint8) * np.uint8(self.class_colors[cid])
                 res = cv2.addWeighted(det, 0.6, det_mask, 0.4, 1.0)
                 frame[y1:y2, x1:x2] = res

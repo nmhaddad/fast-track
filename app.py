@@ -47,7 +47,8 @@ def run_fast_track(input_video: str,
                             names=names,
                             image_shape=(camera.get(3), camera.get(4)))
     tracker = get_tracker(tracker_name=tracker_name,
-                          names=names)
+                          names=names,
+                          visualize=True)
     with Pipeline(camera=camera, detector=detector, tracker=tracker) as p:
         outfile = p.run()
     return outfile
