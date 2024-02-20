@@ -3,7 +3,7 @@
 ## Known Issues:
 - None
 
-## v0.9.0 - Nate Haddad, 2/19/2024
+## v1.0.0 - Nate Haddad, 2/19/2024
 - Add database option to tracker.
 - Major refactor of all modules.
 - Additional options for `OpenAI` image processing

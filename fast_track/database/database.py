@@ -1,6 +1,7 @@
 """ Database class to store information about tracks and detections. """
 
 from datetime import datetime
+import logging
 from typing import Any, Dict, List
 
 import numpy as np
@@ -9,6 +10,9 @@ from sqlalchemy.orm import sessionmaker
 
 from .schemas import Base, Detection, Frame, Job, Track
 from .utils import generate_frame_caption, encode_image
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class Database:
@@ -94,4 +98,7 @@ class Database:
             gpt4v_caption=generate_frame_caption(frame_base64) if self.use_gpt4v_captions else None,
             job_id=self.job_id
         ))
-        self.db.commit()
+        try:
+            self.db.commit()
+        except Exception:
+            logger.warning("add_frame | Failed to add frame to database.")

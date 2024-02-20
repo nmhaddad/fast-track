@@ -1,7 +1,5 @@
 """ Processing pipeline with detection and tracking """
 
-from __future__ import annotations
-
 import logging
 import os
 import tempfile
@@ -103,7 +101,7 @@ class Pipeline:
             # add frame to database
             if self.frame_count % self.interval_frames == 0 and self.database:
                 logger.info(f"run | Adding frame {self.frame_count} to database.")
-                Thread(target=self.database.add_frame, args=(frame, self.frame_count)).start()
+                t = Thread(target=self.database.add_frame, args=(frame, self.frame_count)).start()
 
             # detection
             class_ids, scores, boxes = self.detector(frame)
