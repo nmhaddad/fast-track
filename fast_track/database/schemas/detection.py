@@ -4,7 +4,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped
 
 from .base import Base
-# from .track import Track
 
 
 class Detection(Base):

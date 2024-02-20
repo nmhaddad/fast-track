@@ -106,11 +106,9 @@ class Pipeline:
                 Thread(target=self.database.add_frame, args=(frame, self.frame_count)).start()
 
             # detection
-            class_ids, scores, boxes = self.detector.detect(frame)
-            if self.detector.visualize:
-                self.detector.visualize_detections(frame, class_ids, scores, boxes)
+            class_ids, scores, boxes = self.detector(frame)
 
-            # tracking (will also update and visualize tracks if configured)
+            # tracking
             if self.tracker:
                 track_messages = self.tracker.update(boxes, scores, class_ids, frame)
                 if self.database:

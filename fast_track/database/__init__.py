@@ -1,3 +1,3 @@
-""" Initializes the db module. """
+""" Initializes the database module. """
 
 from .database import Database
