@@ -6,7 +6,7 @@ from .object_tracker import ObjectTracker
 from .third_party.bytetrack.byte_tracker import BYTETracker
 
 
-def get_tracker(tracker_name: str, names: List[str], tracker_params: dict = {}) -> ObjectTracker:
+def get_tracker(tracker_name: str, names: List[str], **kwargs) -> ObjectTracker:
     """ Tracker selector.
 
     Args:
@@ -18,6 +18,6 @@ def get_tracker(tracker_name: str, names: List[str], tracker_params: dict = {}) 
         An object tracker.
     """
     if tracker_name == "ByteTrack":
-        return BYTETracker(**tracker_params, names=names)
+        return BYTETracker(names=names, **kwargs)
     else:
         raise ValueError("Unsupported object tracker provided as argument.")

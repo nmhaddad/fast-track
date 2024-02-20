@@ -17,7 +17,7 @@ class ObjectTracker(metaclass=ABCMeta):
 
     def __init__(self,
                  names: List[str],
-                 visualize: bool):
+                 visualize: bool = False):
         """ Initializes base object trackers.
 
         Args:
