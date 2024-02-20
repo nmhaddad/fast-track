@@ -27,17 +27,16 @@ Package is installable with Python 3.9, and 3.10
     from fast_track.databases import SQLDatabase
 
 
-    if __name__ == '__main__':
-        with open('config/coco.yml', 'r') as f:
-            config = yaml.safe_load(f)
+    with open('config/coco.yml', 'r') as f:
+        config = yaml.safe_load(f)
 
-        camera = cv2.VideoCapture(config['data_path'])
-        detector = YOLONAS(**config['detector'], names=config['names'], image_shape=(camera.get(3), camera.get(4)))
-        tracker = BYTETracker(**config['tracker'], names=config['names'])
-        database = SQLDatabase(**config["db"], class_names=config['names'])
+    camera = cv2.VideoCapture(config['data_path'])
+    detector = YOLONAS(**config['detector'], names=config['names'], image_shape=(camera.get(3), camera.get(4)))
+    tracker = BYTETracker(**config['tracker'], names=config['names'])
+    database = SQLDatabase(**config["db"], class_names=config['names'])
 
-        with Pipeline(camera=camera, detector=detector, tracker=tracker, database=database, outfile=config['outfile']) as p:
-            p.run()
+    with Pipeline(camera=camera, detector=detector, tracker=tracker, database=database, outfile=config['outfile']) as p:
+        p.run()
     ```
 
 ## Run the Demo
