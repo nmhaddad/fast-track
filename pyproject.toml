@@ -49,5 +49,7 @@ gradio = [
     "gradio == 3.40.1",
 ]
 
-[tool.setuptools]
-py-modules = []
+[tool.setuptools.packages.find]
+exclude = ["config", "media", "models", "src"]
+namespaces = false
+
