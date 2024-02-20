@@ -11,7 +11,7 @@ import cv2
 
 from .detectors import ObjectDetector
 from .trackers import ObjectTracker
-from .database import Database
+from .databases import SQLDatabase
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -33,7 +33,7 @@ class Pipeline:
                  camera: cv2.VideoCapture,
                  detector: ObjectDetector,
                  tracker: Optional[ObjectTracker] = None,
-                 database: Optional[Database] = None,
+                 database: Optional[SQLDatabase] = None,
                  outfile: Optional[str] = None):
         """ Inits Pipeline class with a given object detector and tracker.
 

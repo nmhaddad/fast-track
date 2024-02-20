@@ -5,10 +5,9 @@ from typing import List
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship, Mapped
 
-
 from .base import Base
-from .detection import Detection
 from .job import Job
+from .detection import Detection
 
 
 class Track(Base):

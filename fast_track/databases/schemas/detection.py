@@ -1,9 +1,16 @@
 """ Detection schemas """
 
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped
 
 from .base import Base
+
+if TYPE_CHECKING:
+    from .track import Track
+else:
+    Track = "Track"
 
 
 class Detection(Base):

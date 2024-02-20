@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from .kalman_filter import KalmanFilter
-from .basetrack import BaseTrack, TrackState
+from ..kalman_filter import KalmanFilter
+from .base_track import BaseTrack, TrackState
 
 
 class STrack(BaseTrack):

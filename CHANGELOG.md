@@ -4,8 +4,9 @@
 - None
 
 ## v1.0.0 - Nate Haddad, 2/19/2024
-- Add database option to tracker.
-- Major refactor of all modules.
+- Add database option to tracker
+- Add `SQLDatabase` database class
+- Major refactor of all modules
 - Additional options for `OpenAI` image processing
 
 ## v0.8.0 - Nate Haddad, 2/13/2024

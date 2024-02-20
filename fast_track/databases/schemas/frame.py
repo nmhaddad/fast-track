@@ -3,7 +3,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped
 
-from .base import Base
+from . import Base, Job
 
 
 class Frame(Base):

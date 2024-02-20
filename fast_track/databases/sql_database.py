@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class Database:
+class SQLDatabase:
     """ Database class to store information about tracks and detections. """
 
     def __init__(self, db_uri: str, class_names: List[str], use_gpt4v_captions: bool = False):

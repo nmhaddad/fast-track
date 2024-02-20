@@ -5,8 +5,7 @@ import cv2
 
 from .kalman_filter import KalmanFilter
 from . import matching
-from .strack import STrack
-from .track_state import TrackState
+from .dtypes import STrack, TrackState
 from .utils import joint_stracks, sub_stracks, remove_duplicate_stracks
 from ...object_tracker import ObjectTracker
 

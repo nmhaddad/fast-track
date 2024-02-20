@@ -1,8 +1,8 @@
 # Fast-Track 🚀 Real-Time Object Tracking Pipelines
 
-Installable Python package for object tracking pipelines with YOLO-NAS, YOLOv8, and YOLOv7 object detectors and BYTETracker object tracking.
+Installable Python package for object tracking pipelines with YOLO-NAS, YOLOv8, and YOLOv7 object detectors and BYTETracker object tracking with support for SQL database servers.
 
-UPDATES: Now supporting YOLO-NAS! [Try it out now with Gradio](#run-the-demo).
+[Try it out now with Gradio](#run-the-demo).
 
 ![Try out the Gradio Demo!](media/gradio_demo.png)
 
@@ -24,6 +24,7 @@ Package is installable with Python 3.9, and 3.10
     from fast_track import Pipeline
     from fast_track.detectors import YOLONAS
     from fast_track.trackers import BYTETracker
+    from fast_track.databases import SQLDatabase
 
 
     if __name__ == '__main__':
@@ -33,8 +34,9 @@ Package is installable with Python 3.9, and 3.10
         camera = cv2.VideoCapture(config['data_path'])
         detector = YOLONAS(**config['detector'], names=config['names'], image_shape=(camera.get(3), camera.get(4)))
         tracker = BYTETracker(**config['tracker'], names=config['names'])
+        database = SQLDatabase(**config["db"], class_names=config['names'])
 
-        with Pipeline(camera=camera, detector=detector, tracker=tracker, outfile=config['outfile']) as p:
+        with Pipeline(camera=camera, detector=detector, tracker=tracker, database=database, outfile=config['outfile']) as p:
             p.run()
     ```
 
