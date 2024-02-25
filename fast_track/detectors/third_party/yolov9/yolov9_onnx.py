@@ -1,4 +1,4 @@
-""" YOLOv7 ONNX detector wrapper """
+""" YOLOv9ONNX detector wrapper """
 
 from typing import Tuple, List
 
@@ -7,8 +7,8 @@ import numpy as np
 from ...object_detector_onnx import ObjectDetectorONNX
 
 
-class YOLOv7(ObjectDetectorONNX):
-    """ YOLOv7 ONNX detector.
+class YOLOv9ONNX(ObjectDetectorONNX):
+    """ YOLOv9ONNX detector.
 
     Attributes:
         weights_path: path to pretrained weights.
@@ -25,7 +25,7 @@ class YOLOv7(ObjectDetectorONNX):
                  names: List[str],
                  image_shape: Tuple[int, int],
                  visualize: bool = False):
-        """ Init YOLOv7 objects with given parameters.
+        """ Init YOLOv9 objects with given parameters.
 
         Args:
             weights_path. path to pretrained weights.

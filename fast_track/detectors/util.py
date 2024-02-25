@@ -5,7 +5,8 @@ from typing import List, Tuple
 from .object_detector import ObjectDetector
 from .third_party.yolo_nas.yolo_nas import YOLONAS
 from .third_party.yolov8 import YOLOv8, YOLOv8ONNX
-from .third_party.yolov7.yolov7 import YOLOv7
+from .third_party.yolov7 import YOLOv7ONNX
+from .third_party.yolov9 import YOLOv9ONNX
 
 
 MODELS = {
@@ -19,7 +20,8 @@ MODELS = {
     "YOLOv8 L": "yolov8_l",
     "YOLOv8 X": "yolov8_x",
     "YOLOv8": "yolov8_custom",
-    "YOLOv7": "yolov7_custom"
+    "YOLOv7": "yolov7_custom",
+    "YOLOv9": "yolov9_custom"
 }
 
 
@@ -61,7 +63,12 @@ def get_detector(weights_path: str,
                       image_shape=image_shape,
                       **detector_params)
     elif detector_type.startswith("yolov7"):
-        return YOLOv7(weights_path=weights_path,
+        return YOLOv7ONNX(weights_path=weights_path,
+                      names=names,
+                      image_shape=image_shape,
+                      **detector_params)
+    elif detector_type.startswith("yolov9"):
+        return YOLOv9ONNX(weights_path=weights_path,
                       names=names,
                       image_shape=image_shape,
                       **detector_params)
