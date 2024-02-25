@@ -64,13 +64,13 @@ def get_detector(weights_path: str,
                       **detector_params)
     elif detector_type.startswith("yolov7"):
         return YOLOv7ONNX(weights_path=weights_path,
-                      names=names,
-                      image_shape=image_shape,
-                      **detector_params)
+                          names=names,
+                          image_shape=image_shape,
+                          **detector_params)
     elif detector_type.startswith("yolov9"):
         return YOLOv9ONNX(weights_path=weights_path,
-                      names=names,
-                      image_shape=image_shape,
-                      **detector_params)
+                          names=names,
+                          image_shape=image_shape,
+                          **detector_params)
     else:
         raise ValueError("Detector name not found.")

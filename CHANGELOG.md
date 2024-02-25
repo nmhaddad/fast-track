@@ -3,6 +3,9 @@
 ## Known Issues:
 - None
 
+## v1.1.1 - Nate Haddad, 2/25/2024
+- Add support for class selection (fixes bug)
+
 ## v1.1.0 - Nate Haddad, 2/25/2024
 - Add `YOLOv9ONNX` to `detectors`
 

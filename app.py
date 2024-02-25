@@ -89,6 +89,7 @@ with gr.Blocks() as demo:
                         info="Select a supported object detector type. ONNX models are accepted for YOLOv8 and YOLOv7",
                         choices=[
                             "YOLO-NAS",
+                            "YOLOv9",
                             "YOLOv8",
                             "YOLOv7",
                         ],
