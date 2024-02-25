@@ -1,16 +1,16 @@
-""" YOLOv8ONNX detector wrapper """
+""" YOLOv9ONNX detector wrapper """
 
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import torch
-from ultralytics.utils import ops
+import ultralytics.utils.ops as ops
 
 from ...object_detector_onnx import ObjectDetectorONNX
 
 
-class YOLOv8ONNX(ObjectDetectorONNX):
-    """ YOLOv8 ONNX detector.
+class YOLOv9ONNX(ObjectDetectorONNX):
+    """ YOLOv9ONNX detector.
 
     Attributes:
         weights_path: path to pretrained weights.
@@ -22,14 +22,13 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         input_width: input width.
         output_names: model output names.
         conf_thresh: The confidence threshold below which boxes will be filtered out. Valid values are
-                     between 0.0 and 1.0.
+            between 0.0 and 1.0.
         iou_thresh: The IoU threshold below which boxes will be filtered out during NMS. Valid values are
-                    between 0.0 and 1.0.
+            between 0.0 and 1.0.
         agnostic:If True, the model is agnostic to the number of classes, and all classes will be considered as one.
-        multi_label:If True, each box may have multiple labels.
+        multi_label: If True, each box may have multiple labels.
         labels: A list of lists, where each inner list contains the apriori labels for a given image. The list should
-                be in the format output by a dataloader, with each label being a tuple of
-                (class_index, x1, y1, x2, y2).
+            be in the format output by a dataloader, with each label being a tuple of (class_index, x1, y1, x2, y2).
         max_det: The maximum number of boxes to keep after NMS.
         nm: The number of masks output by the model.
     """
@@ -46,7 +45,7 @@ class YOLOv8ONNX(ObjectDetectorONNX):
                  multi_label: bool = False,
                  labels: List[List[Union[int, float, torch.Tensor]]] = (),
                  max_det: int = 300):
-        """ Init YOLOv8 objects with given parameters.
+        """ Init YOLOv9ONNX objects with given parameters.
 
         Args:
             weights_path. path to pretrained weights.
@@ -54,16 +53,17 @@ class YOLOv8ONNX(ObjectDetectorONNX):
             image_shape: shape of input images.
             visualize: bool to visualize output or not.
             conf_thresh: The confidence threshold below which boxes will be filtered out. Valid values are
-                         between 0.0 and 1.0.
+                between 0.0 and 1.0.
             iou_thresh: The IoU threshold below which boxes will be filtered out during NMS. Valid values are
-                        between 0.0 and 1.0.
+                between 0.0 and 1.0.
             agnostic: If True, the model is agnostic to the number of classes, and all classes will be considered
-                      as one.
+                as one.
             multi_label:If True, each box may have multiple labels.
             labels: A list of lists, where each inner list contains the apriori labels for a given image. The list
-                    should be in the format output by a dataloader, with each label being a tuple of
-                    (class_index, x1, y1, x2, y2).
+                should be in the format output by a dataloader, with each label being a tuple of
+                (class_index, x1, y1, x2, y2).
             max_det: The maximum number of boxes to keep after NMS.
+
         """
         super().__init__(weights_path, names, image_shape, visualize)
         self.conf_thresh = conf_thres
@@ -74,7 +74,8 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         self.labels = labels
         self.max_det = max_det
 
-    def postprocess(self, tensor: np.ndarray) -> Tuple[list, list, list]:
+    def postprocess(self,
+                    tensor: np.ndarray) -> Tuple[list, list, list]:
         """ Postprocesses output.
 
         Args:

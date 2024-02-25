@@ -1,6 +1,6 @@
 # Fast-Track 🚀 Real-Time Object Tracking Pipelines
 
-Installable Python package for object tracking pipelines with YOLO-NAS, YOLOv8, and YOLOv7 object detectors and BYTETracker object tracking with support for SQL database servers.
+Installable Python package for object tracking pipelines with YOLOv9, YOLO-NAS, YOLOv8, and YOLOv7 object detectors and BYTETracker object tracking with support for SQL database servers.
 
 [Try it out now with Gradio](#run-the-demo).
 
@@ -67,3 +67,5 @@ Author: Nate Haddad - nhaddad2112[at]gmail[dot]com
 [4] Zhang, Yifu and Sun, Peize and Jiang, Yi and Yu, Dongdong and Weng, Fucheng and Yuan, Zehuan and Luo, Ping and Liu, Wenyu and Wang, Xinggang; "ByteTrack: Multi-Object Tracking by Associating Every Detection Box"; https://github.com/ifzhang; 2022; [Online]. Available: https://github.com/ifzhang/ByteTrack
 
 [5] Aharon, Shay and Louis-Dupont and Ofri Masad and Yurkova, Kate and Lotem Fridman and Lkdci and Khvedchenya, Eugene and Rubin, Ran and Bagrov, Natan and Tymchenko, Borys and Keren, Tomer and Zhilko, Alexander and Eran-Deci; "Super-Gradients"; https://github.com/Deci-AI/super-gradients; 2023; [Online]. Available: https://github.com/Deci-AI/super-gradients
+
+[6] Wang, Chien-Yao and Liao, Hong-Yuan Mark; "YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information"; https://github.com/WongKinYiu/yolov9; 2024; [Online]. Available: https://github.com/WongKinYiu/yolov9
