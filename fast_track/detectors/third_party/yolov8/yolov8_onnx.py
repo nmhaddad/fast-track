@@ -25,6 +25,7 @@ class YOLOv8ONNX(ObjectDetectorONNX):
                      between 0.0 and 1.0.
         iou_thresh: The IoU threshold below which boxes will be filtered out during NMS. Valid values are
                     between 0.0 and 1.0.
+        classes: A list on integers corresponding to class indices to be used for detection.
         agnostic:If True, the model is agnostic to the number of classes, and all classes will be considered as one.
         multi_label:If True, each box may have multiple labels.
         labels: A list of lists, where each inner list contains the apriori labels for a given image. The list should
@@ -57,6 +58,7 @@ class YOLOv8ONNX(ObjectDetectorONNX):
                          between 0.0 and 1.0.
             iou_thresh: The IoU threshold below which boxes will be filtered out during NMS. Valid values are
                         between 0.0 and 1.0.
+            classes: A list on integers corresponding to class indices to be used for detection.
             agnostic: If True, the model is agnostic to the number of classes, and all classes will be considered
                       as one.
             multi_label:If True, each box may have multiple labels.
@@ -86,7 +88,7 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         predictions = ops.non_max_suppression(torch.tensor(tensor[0]),
                                               conf_thres=self.conf_thresh,
                                               iou_thres=self.iou_thresh,
-                                              classes=len(self.classes),
+                                              classes=self.classes,
                                               agnostic=self.agnostic,
                                               multi_label=self.multi_label,
                                               labels=self.labels,
