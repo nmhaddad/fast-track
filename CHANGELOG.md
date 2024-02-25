@@ -3,6 +3,9 @@
 ## Known Issues:
 - None
 
+## v1.1.0 - Nate Haddad, 2/25/2024
+- Add `YOLOv9ONNX` to `detectors`
+
 ## v1.0.0 - Nate Haddad, 2/19/2024
 - Add database option to tracker
 - Add `SQLDatabase` database class
