@@ -86,7 +86,7 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         predictions = ops.non_max_suppression(torch.tensor(tensor[0]),
                                               conf_thres=self.conf_thresh,
                                               iou_thres=self.iou_thresh,
-                                              classes=self.classes,
+                                              classes=len(self.classes),
                                               agnostic=self.agnostic,
                                               multi_label=self.multi_label,
                                               labels=self.labels,
