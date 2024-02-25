@@ -41,7 +41,7 @@ class YOLOv9ONNX(ObjectDetectorONNX):
                  visualize: bool = False,
                  conf_thres: float = 0.25,
                  iou_thres: float = 0.45,
-                 classes: Optional[int] = None,
+                 classes: Optional[List[int]] = None,
                  agnostic: bool = False,
                  multi_label: bool = False,
                  labels: List[List[Union[int, float, torch.Tensor]]] = (),
