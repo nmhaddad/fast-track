@@ -28,11 +28,13 @@ class RFDETR(ObjectDetector):
         """Initializes a RF-DETR object.
 
         Args:
-            weights_path: str path to model weights.
             names: list of class names.
-            image_shape: tuple of height and width of input images. Must be divisible by 56.
-            visualize: boolean value to visualize outputs.
-            threshold: float value to filter out low confidence detections.
+            resolution: input image resolution.
+            model_name: name of the model to be loaded.
+            weights_path: path to the model weights.
+            visualize: flag to enable visualization.
+            threshold: confidence threshold.
+            device: device to run the model on.
         """
         # weights_path = weights_path if weights_path else 'rfdetr_base'
         super().__init__(weights_path=weights_path, names=names, image_shape=resolution, visualize=visualize)
