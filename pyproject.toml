@@ -22,7 +22,7 @@ dependencies = [
     "pyyaml == 6.0.1",
     "opencv-python == 4.9.0.80",
     "onnxruntime == 1.13.1",
-    "torch == 2.2.0",
+    "torch == 2.6.0",
     "scipy == 1.12.0",
     "ultralytics == 8.1.9",
     "super-gradients == 3.6.0",
