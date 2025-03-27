@@ -4,7 +4,6 @@ from typing import Optional, Tuple
 
 import numpy as np
 from rfdetr import RFDETRBase, RFDETRLarge
-import torch
 
 from ...object_detector import ObjectDetector
 
@@ -54,5 +53,4 @@ class RFDETR(ObjectDetector):
             Tuple[list, list, list]: Postprocessed output (class_ids, scores, boxes).
         """
         detections = self.model.predict(image, threshold=self.threshold)
-        print(detections)
         return detections.class_id, detections.confidence, detections.xyxy

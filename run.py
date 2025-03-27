@@ -13,16 +13,13 @@ from fast_track.databases import SQLDatabase
 load_dotenv()
 
 
-with open('config/coco.yml', 'r') as f:
+with open('config/rf-detr.yml', 'r') as f:
     config = yaml.safe_load(f)
 
 camera = cv2.VideoCapture(config['data_path'])
-# detector = YOLOv9ONNX(**config['detector'], names=config['names'], image_shape=(camera.get(3), camera.get(4)))
-from rfdetr.util.coco_classes import COCO_CLASSES
-
-detector = RFDETR(**config['detector'], names=COCO_CLASSES)
-tracker = BYTETracker(**config['tracker'], names=COCO_CLASSES)
-database = SQLDatabase(**config["db"], class_names=COCO_CLASSES)
+detector = RFDETR(**config['detector'], names=config['names'])
+tracker = BYTETracker(**config['tracker'], names=config['names'])
+database = SQLDatabase(**config["db"], class_names=config['names'])
 
 with Pipeline(
     camera=camera,
