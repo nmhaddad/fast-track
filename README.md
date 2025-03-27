@@ -1,6 +1,6 @@
 # Fast-Track 🚀 Real-Time Object Tracking Pipelines
 
-Installable Python package for object tracking pipelines with YOLOv9, YOLO-NAS, YOLOv8, and YOLOv7 object detectors and BYTETracker object tracking with support for SQL database servers.
+Installable Python package for object tracking pipelines with RF-DETR, YOLOv9, YOLO-NAS, YOLOv8, and YOLOv7 object detectors and BYTETracker object tracking with support for SQL database servers.
 
 [Try it out now with Gradio](#run-the-demo).
 
@@ -16,7 +16,37 @@ Package is installable with Python 3.9, and 3.10
 
 ## Running:
 
-1. Example usage:
+1. Example usage RF-DETR:
+    ```
+    import cv2
+    import yaml
+    from dotenv import load_dotenv
+
+    from fast_track import Pipeline
+
+    # from fast_track.detectors import YOLOv9ONNX
+    from fast_track.detectors import RFDETR
+    from fast_track.trackers import BYTETracker
+    from fast_track.databases import SQLDatabase
+
+    load_dotenv()
+
+
+    with open("config/rf-detr.yml", "r") as f:
+        config = yaml.safe_load(f)
+
+    camera = cv2.VideoCapture(config["data_path"])
+    detector = RFDETR(**config["detector"], names=config["names"])
+    tracker = BYTETracker(**config["tracker"], names=config["names"])
+    database = SQLDatabase(**config["db"], class_names=config["names"])
+
+    with Pipeline(
+        camera=camera, detector=detector, tracker=tracker, database=database, outfile=config["outfile"]
+    ) as pipeline:
+        pipeline.run()
+    ```
+
+1. Example usage YOLO-NAS:
     ```
     import cv2
     import yaml
