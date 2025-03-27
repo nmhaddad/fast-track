@@ -1,4 +1,4 @@
-""" Gradio application for fast_track. """
+"""Gradio application for fast_track."""
 
 from typing import Optional
 
@@ -12,13 +12,15 @@ from fast_track.detectors import get_detector
 from fast_track.trackers import get_tracker
 
 
-def run_fast_track(input_video: str,
-                   detector_type: str,
-                   tracker_name: str,
-                   custom_detector_type: Optional[str] = None,
-                   custom_detector_weights: Optional[str] = None,
-                   custom_detector_names: Optional[str] = None) -> str:
-    """ Runs a fast_track pipeline with a selected detector and tracker.
+def run_fast_track(
+    input_video: str,
+    detector_type: str,
+    tracker_name: str,
+    custom_detector_type: Optional[str] = None,
+    custom_detector_weights: Optional[str] = None,
+    custom_detector_names: Optional[str] = None,
+) -> str:
+    """Runs a fast_track pipeline with a selected detector and tracker.
 
     Args:
         input_video: path to processing video.
@@ -42,13 +44,10 @@ def run_fast_track(input_video: str,
     print(detector_type)
     print(names)
 
-    detector = get_detector(weights_path=weights_path,
-                            detector_type=detector_type,
-                            names=names,
-                            image_shape=(camera.get(3), camera.get(4)))
-    tracker = get_tracker(tracker_name=tracker_name,
-                          names=names,
-                          visualize=True)
+    detector = get_detector(
+        weights_path=weights_path, detector_type=detector_type, names=names, image_shape=(camera.get(3), camera.get(4))
+    )
+    tracker = get_tracker(tracker_name=tracker_name, names=names, visualize=True)
     with Pipeline(camera=camera, detector=detector, tracker=tracker) as p:
         outfile = p.run()
     return outfile
@@ -62,7 +61,6 @@ with gr.Blocks() as demo:
     with gr.Row():
         # Input Column
         with gr.Column():
-
             input_video = gr.PlayableVideo(label="Input Video", interactive=True)
 
             # Object Detector
@@ -80,7 +78,7 @@ with gr.Blocks() as demo:
                         "YOLOv8 L",
                         "YOLOv8 X",
                     ],
-                    value="YOLO-NAS M"
+                    value="YOLO-NAS M",
                 )
 
                 with gr.Accordion(label="Load a Custom Model (Overrides Pretrained Model)", open=False):
@@ -98,22 +96,18 @@ with gr.Blocks() as demo:
                         label="Custom Model Weights",
                         info="Upload a weights file corresponding to the model type provided above",
                         show_label=True,
-                        file_types=[".pt", ".onnx"]
+                        file_types=[".pt", ".onnx"],
                     )
                     custom_detector_names = gr.File(
                         label="Custom Model Names File",
                         info="Upload a list of class names in a txt file",
                         file_types=[".txt"],
-                        show_label=True
+                        show_label=True,
                     )
 
             # Object Tracker
             with gr.Group():
-                tracker_type = gr.Dropdown(
-                    label="Object Tracker",
-                    choices=["ByteTrack"],
-                    value="ByteTrack"
-                )
+                tracker_type = gr.Dropdown(label="Object Tracker", choices=["ByteTrack"], value="ByteTrack")
 
             # Run
             btn = gr.Button("Run", variant="primary")
@@ -128,7 +122,7 @@ with gr.Blocks() as demo:
             tracker_type,
             custom_detector_type,
             custom_detector_weights,
-            custom_detector_names
+            custom_detector_names,
         ]
         btn.click(fn=run_fast_track, inputs=inputs, outputs=[output_video])
 
