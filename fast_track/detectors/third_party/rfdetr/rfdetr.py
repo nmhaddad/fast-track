@@ -36,7 +36,6 @@ class RFDETR(ObjectDetector):
             threshold: confidence threshold.
             device: device to run the model on.
         """
-        # weights_path = weights_path if weights_path else 'rfdetr_base'
         super().__init__(weights_path=weights_path, names=names, image_shape=resolution, visualize=visualize)
         self.threshold = threshold
 
