@@ -23,6 +23,7 @@ class RFDETR(ObjectDetector):
         weights_path: Optional[str] = None,
         visualize: bool = False,
         threshold: float = 0.5,
+        device: str = "cuda",
     ):
         """Initializes a RF-DETR object.
 
@@ -40,7 +41,7 @@ class RFDETR(ObjectDetector):
         if model_name == "rfdetr_base":
             self.model = RFDETRBase(resolution=resolution)
         elif model_name == "rfdetr_large":
-            self.model = RFDETRLarge(resolution=resolution, device="cuda")
+            self.model = RFDETRLarge(resolution=resolution, device=device)
         else:
             raise NotImplementedError(f"Custom weight loading currently not supported for RF-DETR.")
 
