@@ -20,7 +20,7 @@ requires-python = ">=3.10, <3.13"
 dependencies = [
     "numpy == 1.23.0", 
     "pyyaml == 6.0.1",
-    "opencv-python == 4.9.0.80",
+    "opencv-python == 4.11.0.86",
     "onnxruntime == 1.13.1",
     "torch == 2.6.0",
     "scipy == 1.12.0",
@@ -43,7 +43,7 @@ gpu = [
     "onnxruntime-gpu==1.17.0",
 ]
 bytetrack = [
-    "lap == 0.4.0",
+    "lapx == 0.5.11.post1",
     "Cython == 3.0.8",
     "cython-bbox @ git+https://github.com/samson-wang/cython_bbox.git#egg=cython-bbox",
 ]

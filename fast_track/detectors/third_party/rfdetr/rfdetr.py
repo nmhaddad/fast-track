@@ -3,7 +3,8 @@
 from typing import Optional, Tuple
 
 import numpy as np
-from rfdetr import RFDETRBase
+from rfdetr import RFDETRBase, RFDETRLarge
+import torch
 
 from ...object_detector import ObjectDetector
 
@@ -17,7 +18,8 @@ class RFDETR(ObjectDetector):
 
     def __init__(self,
                  names: list,
-                 image_shape: tuple,
+                 resolution: Optional[int] = 560,
+                 model_name: Optional[str] = 'rfdetr_base',
                  weights_path: Optional[str] = None,
                  visualize: bool = False,
                  threshold: float = 0.5):
@@ -30,10 +32,17 @@ class RFDETR(ObjectDetector):
             visualize: boolean value to visualize outputs.
             threshold: float value to filter out low confidence detections.
         """
-        weights_path = weights_path if weights_path else 'rfdetr_base'
-        super().__init__(weights_path=weights_path, names=names, image_shape=image_shape, visualize=visualize)
-        self.model = RFDETRBase(pretrain_weights=weights_path, resolution=image_shape)
+        # weights_path = weights_path if weights_path else 'rfdetr_base'
+        super().__init__(weights_path=weights_path, names=names, image_shape=resolution, visualize=visualize)
         self.threshold = threshold
+
+        if model_name == 'rfdetr_base':
+            self.model = RFDETRBase(resolution=resolution)
+        elif model_name == 'rfdetr_large':
+            self.model = RFDETRLarge(resolution=resolution, device="cuda")
+        else:
+            raise NotImplementedError(f"Custom weight loading currently not supported for RF-DETR.")
+
 
     def detect(self, image: np.ndarray) -> Tuple[list, list, list]:
         """ Runs inference over an input image.
@@ -45,4 +54,5 @@ class RFDETR(ObjectDetector):
             Tuple[list, list, list]: Postprocessed output (class_ids, scores, boxes).
         """
         detections = self.model.predict(image, threshold=self.threshold)
-        return detections.class_id, detections.confidence, detections.bbox
+        print(detections)
+        return detections.class_id, detections.confidence, detections.xyxy
