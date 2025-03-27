@@ -1,4 +1,4 @@
-""" Detection schemas """
+"""Detection schemas"""
 
 from typing import TYPE_CHECKING
 
@@ -14,7 +14,8 @@ else:
 
 
 class Detection(Base):
-    """ Detection schema """
+    """Detection schema"""
+
     __tablename__ = "detections"
     detection_id = Column(Integer, primary_key=True)
     frame_number = Column(Integer, nullable=False)

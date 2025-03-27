@@ -1,4 +1,4 @@
-""" ObjectDetectorONNX class """
+"""ObjectDetectorONNX class"""
 
 from typing import Tuple, List
 from abc import ABCMeta, abstractmethod
@@ -11,7 +11,7 @@ from .object_detector import ObjectDetector
 
 
 class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
-    """ Class inherited by ONNX object detectors.
+    """Class inherited by ONNX object detectors.
 
     Attributes:
         weights_path: str to weights to load model.
@@ -21,7 +21,7 @@ class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
     """
 
     def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool):
-        """ Init ObjectDetector objects.
+        """Init ObjectDetector objects.
 
         Args:
             weights_path: str to weights to load model.
@@ -30,11 +30,7 @@ class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
             visualize: boolean value to visualize outputs.
         """
         super().__init__(weights_path, names, image_shape, visualize)
-        self.providers = [
-            'TensorrtExecutionProvider',
-            'CUDAExecutionProvider',
-            'CPUExecutionProvider'
-        ]
+        self.providers = ["TensorrtExecutionProvider", "CUDAExecutionProvider", "CPUExecutionProvider"]
         self.session = None
         self.input_shape = None
         self.input_names = None
@@ -44,7 +40,7 @@ class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
 
     @abstractmethod
     def postprocess(self, tensor: np.ndarray) -> Tuple[list, list, list]:
-        """ Postprocesses output.
+        """Postprocesses output.
 
         Args:
             tensor: output tensor from ONNX session.
@@ -54,8 +50,8 @@ class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
         """
 
     def initialize_model(self) -> None:
-        """ Creates a YOLOvX detector from an ONNX file """
-        self.session = ort.InferenceSession(self.weights_path, providers = self.providers)
+        """Creates a YOLOvX detector from an ONNX file"""
+        self.session = ort.InferenceSession(self.weights_path, providers=self.providers)
 
         model_inputs = self.session.get_inputs()
         self.input_names = [i.name for i in model_inputs]
@@ -68,7 +64,7 @@ class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
         self.output_names = [o.name for o in model_outputs]
 
     def preprocess(self, image: np.ndarray) -> np.ndarray:
-        """ Preprocesses input for ONNX inference.
+        """Preprocesses input for ONNX inference.
 
         Args:
             image: an input image.
@@ -84,7 +80,7 @@ class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
         return input_tensor
 
     def rescale_boxes(self, boxes: np.ndarray) -> np.ndarray:
-        """ Rescales bounding boxes.
+        """Rescales bounding boxes.
 
         Args:
             boxes: an array of bounding boxes.
@@ -98,7 +94,7 @@ class ObjectDetectorONNX(ObjectDetector, metaclass=ABCMeta):
         return boxes
 
     def detect(self, image: np.ndarray) -> Tuple[list, list, list]:
-        """ Runs inference over an input image.
+        """Runs inference over an input image.
 
         Args:
             image: input image

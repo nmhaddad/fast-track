@@ -1,4 +1,4 @@
-""" This module contains the schemas for the database models. """
+"""This module contains the schemas for the database models."""
 
 from .base import Base
 from .detection import Detection

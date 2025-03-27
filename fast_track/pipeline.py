@@ -1,4 +1,4 @@
-""" Processing pipeline with detection and tracking """
+"""Processing pipeline with detection and tracking"""
 
 import logging
 import os
@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 
 
 class Pipeline:
-    """ Class that represents a camera-based detection and tracking pipeline
+    """Class that represents a camera-based detection and tracking pipeline
 
     Attributes:
         camera: opencv-python camera for reading video data.
@@ -29,13 +29,15 @@ class Pipeline:
         outfile: cv2.VideoWriter object to write processed frames to.
     """
 
-    def __init__(self,
-                 camera: cv2.VideoCapture,
-                 detector: ObjectDetector,
-                 tracker: Optional[ObjectTracker] = None,
-                 database: Optional[SQLDatabase] = None,
-                 outfile: Optional[str] = None):
-        """ Inits Pipeline class with a given object detector and tracker.
+    def __init__(
+        self,
+        camera: cv2.VideoCapture,
+        detector: ObjectDetector,
+        tracker: Optional[ObjectTracker] = None,
+        database: Optional[SQLDatabase] = None,
+        outfile: Optional[str] = None,
+    ):
+        """Inits Pipeline class with a given object detector and tracker.
 
         Args:
             data_path: path to camera file or stream.
@@ -49,7 +51,7 @@ class Pipeline:
         self.tracker = tracker
         self.database = database
         # Output settings
-        fourcc = cv2.VideoWriter_fourcc(*'avc1')
+        fourcc = cv2.VideoWriter_fourcc(*"avc1")
         fps = int(self.camera.get(cv2.CAP_PROP_FPS))
         w = int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -66,15 +68,17 @@ class Pipeline:
         self.frames = []
 
     def __enter__(self):
-        """ Context manager enter. """
+        """Context manager enter."""
         logger.info("__enter__ | Starting fast_track pipeline...")
         return self
 
-    def __exit__(self,
-                 exc_type: Optional[type[BaseException]] = None,
-                 exc_value: Optional[BaseException] = None,
-                 exc_traceback: Optional[TracebackType] = None) -> None:
-        """ Context manager exit. """
+    def __exit__(
+        self,
+        exc_type: Optional[type[BaseException]] = None,
+        exc_value: Optional[BaseException] = None,
+        exc_traceback: Optional[TracebackType] = None,
+    ) -> None:
+        """Context manager exit."""
         if exc_type or exc_value or exc_traceback:
             logger.error(type)
             logger.error(exc_value)
@@ -91,7 +95,7 @@ class Pipeline:
             logger.info("__exit__ | Database connection closed.")
 
     def run(self) -> None:
-        """ Runs object tracking pipeline. """
+        """Runs object tracking pipeline."""
         while True:
             ret, frame = self.camera.read()
 

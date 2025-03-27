@@ -1,4 +1,4 @@
-""" YOLOv8 detector wrapper """
+"""YOLOv8 detector wrapper"""
 
 import os
 import tempfile
@@ -21,17 +21,14 @@ MODELS = {
 
 
 class YOLOv8(ObjectDetector):
-    """ YOLOv8 Wrapper class.
+    """YOLOv8 Wrapper class.
 
     Attributes:
         model: super_gradients model.
     """
 
-    def __init__(self, weights_path: str,
-                 names: List[str],
-                 image_shape: Tuple[int, int],
-                 visualize: bool = False):
-        """ Initializes a YOLOv8 object.
+    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool = False):
+        """Initializes a YOLOv8 object.
 
         Args:
             weights_path: str path to model weights.
@@ -49,7 +46,7 @@ class YOLOv8(ObjectDetector):
         self.model = YOLO(self.weights_path)
 
     def detect(self, image: np.ndarray) -> Tuple[List[int], List[float], List[np.ndarray]]:
-        """ Runs inference over an input image.
+        """Runs inference over an input image.
 
         Args:
             image: input image

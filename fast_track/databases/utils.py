@@ -1,4 +1,4 @@
-""" Utils for the database module. """
+"""Utils for the database module."""
 
 import base64
 from io import BytesIO
@@ -13,7 +13,7 @@ logger.setLevel(logging.INFO)
 
 
 def encode_image(image: np.ndarray) -> str:
-    """ Encodes an image to base64.
+    """Encodes an image to base64.
 
     Args:
         image: image to encode
@@ -25,11 +25,11 @@ def encode_image(image: np.ndarray) -> str:
     # change mimetype to image/jpeg
     buffered = BytesIO()
     image.save(buffered, format="JPEG")
-    return base64.b64encode(buffered.getvalue()).decode('utf-8')
+    return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
 
 def generate_frame_caption(frame_base64: str, model: str = "gpt-4-vision-preview") -> np.ndarray:
-    """ Generates a caption for a frame using GPT-4 Vision.
+    """Generates a caption for a frame using GPT-4 Vision.
 
     Args:
         frame: frame to generate a caption for
@@ -43,22 +43,24 @@ def generate_frame_caption(frame_base64: str, model: str = "gpt-4-vision-preview
         client = OpenAI()
         response = client.chat.completions.create(
             model=model,
-            messages=[{
-                "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": "Describe the image.",
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{frame_base64}",
-                            "detail": "low",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Describe the image.",
                         },
-                    },
-                ],
-            }],
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{frame_base64}",
+                                "detail": "low",
+                            },
+                        },
+                    ],
+                }
+            ],
             max_tokens=300,
         )
         logger.info("generate_frame_caption | response received")

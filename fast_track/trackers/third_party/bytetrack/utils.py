@@ -1,4 +1,4 @@
-""" Utility functions for BYTETracker. """
+"""Utility functions for BYTETracker."""
 
 import numpy as np
 

@@ -1,4 +1,4 @@
-""" Frame schema """
+"""Frame schema"""
 
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped
@@ -7,7 +7,8 @@ from . import Base, Job
 
 
 class Frame(Base):
-    """ Frame schema """
+    """Frame schema"""
+
     __tablename__ = "frames"
     frame_id = Column(Integer, primary_key=True)
     frame_number = Column(Integer, nullable=False)

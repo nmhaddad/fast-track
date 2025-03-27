@@ -1,4 +1,4 @@
-""" ObjectDetector base class """
+"""ObjectDetector base class"""
 
 import logging
 from typing import Tuple, List
@@ -9,7 +9,7 @@ import cv2
 
 
 class ObjectDetector(metaclass=ABCMeta):
-    """ Base class for object detectors.
+    """Base class for object detectors.
 
     Attributes:
         names: list of class names.
@@ -18,7 +18,7 @@ class ObjectDetector(metaclass=ABCMeta):
     """
 
     def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool):
-        """ Init ObjectDetector objects.
+        """Init ObjectDetector objects.
 
         Args:
             weights_path: str path to model weights.
@@ -37,7 +37,7 @@ class ObjectDetector(metaclass=ABCMeta):
 
     @property
     def image_width(self) -> int:
-        """ Image width attribute.
+        """Image width attribute.
 
         Returns:
             Image width.
@@ -46,7 +46,7 @@ class ObjectDetector(metaclass=ABCMeta):
 
     @property
     def image_height(self) -> int:
-        """ Image height attribute.
+        """Image height attribute.
 
         Returns:
             Image height.
@@ -55,7 +55,7 @@ class ObjectDetector(metaclass=ABCMeta):
 
     @abstractmethod
     def detect(self, image: np.ndarray) -> Tuple[list, list, list]:
-        """ Runs inference over an input image.
+        """Runs inference over an input image.
 
         Args:
             image: input image
@@ -65,9 +65,10 @@ class ObjectDetector(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    def visualize_detections(self, frame: np.ndarray, class_ids: list, scores: list, boxes: list,
-                             thickness: int = 2) -> None:
-        """ Visualizes output.
+    def visualize_detections(
+        self, frame: np.ndarray, class_ids: list, scores: list, boxes: list, thickness: int = 2
+    ) -> None:
+        """Visualizes output.
 
         Args:
             frame: input image.
@@ -78,12 +79,20 @@ class ObjectDetector(metaclass=ABCMeta):
         """
         for cid, score, box in zip(class_ids, scores, boxes):
             x1, y1, x2, y2 = box.astype(int)
-            cv2.putText(frame, self.names[cid], (x1, y1), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[id],
-                        thickness, cv2.LINE_AA)
+            cv2.putText(
+                frame,
+                self.names[cid],
+                (x1, y1),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                self.class_colors[id],
+                thickness,
+                cv2.LINE_AA,
+            )
             cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[cid], thickness)
 
     def __call__(self, image: np.ndarray) -> Tuple[list, list, list]:
-        """ Runs inference over an input image.
+        """Runs inference over an input image.
 
         Args:
             image: input image

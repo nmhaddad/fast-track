@@ -1,4 +1,4 @@
-""" Database class to store information about tracks and detections. """
+"""Database class to store information about tracks and detections."""
 
 from datetime import datetime
 import logging
@@ -16,10 +16,10 @@ logger.setLevel(logging.INFO)
 
 
 class SQLDatabase:
-    """ Database class to store information about tracks and detections. """
+    """Database class to store information about tracks and detections."""
 
     def __init__(self, db_uri: str, class_names: List[str], use_gpt4v_captions: bool = False):
-        """ Inits Database class with a given database URI.
+        """Inits Database class with a given database URI.
 
         Args:
             db_uri: database URI.
@@ -35,7 +35,7 @@ class SQLDatabase:
         self._connect_db()
 
     def _connect_db(self) -> None:
-        """ Connects to the database and creates tables if they don't exist. """
+        """Connects to the database and creates tables if they don't exist."""
         engine = create_engine(self.db_uri)
         Base.metadata.create_all(engine)
         Session = sessionmaker(bind=engine)
@@ -47,15 +47,15 @@ class SQLDatabase:
         self.job_id = job.job_id
 
     def close(self) -> None:
-        """ Closes the database connection. """
+        """Closes the database connection."""
         self.db.close()
 
     def commit(self) -> None:
-        """ Commits the database session. """
+        """Commits the database session."""
         self.db.commit()
 
     def update(self, track_messages: List[Dict[str, Any]]) -> None:
-        """ Updates the database with tracks and detections. """
+        """Updates the database with tracks and detections."""
         for track_message in track_messages:
             crops = track_message.pop("crops")
             track_message["class_name"] = self.class_names[track_message.pop("class_id")]
@@ -79,25 +79,27 @@ class SQLDatabase:
                 image = Detection(
                     frame_number=track_message["curr_frame_number"],
                     image_base64=encode_image(crops[-1]),
-                    track_id=track_message["track_id"]
+                    track_id=track_message["track_id"],
                 )
                 self.db.add(image)
         self.db.commit()
 
     def add_frame(self, frame: np.ndarray, frame_number: int) -> None:
-        """ Adds a frame to the database Frames table.
+        """Adds a frame to the database Frames table.
 
         Args:
             frame: frame to add.
         """
         frame_base64 = encode_image(frame)
-        self.db.add(Frame(
-            frame_number=frame_number,
-            frame_base64=frame_base64,
-            time_created=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            gpt4v_caption=generate_frame_caption(frame_base64) if self.use_gpt4v_captions else None,
-            job_id=self.job_id
-        ))
+        self.db.add(
+            Frame(
+                frame_number=frame_number,
+                frame_base64=frame_base64,
+                time_created=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                gpt4v_caption=generate_frame_caption(frame_base64) if self.use_gpt4v_captions else None,
+                job_id=self.job_id,
+            )
+        )
         try:
             self.db.commit()
         except Exception:

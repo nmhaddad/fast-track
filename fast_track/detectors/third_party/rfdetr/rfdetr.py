@@ -1,4 +1,4 @@
-""" RF-DETR detector wrapper """
+"""RF-DETR detector wrapper"""
 
 from typing import Optional, Tuple
 
@@ -9,20 +9,22 @@ from ...object_detector import ObjectDetector
 
 
 class RFDETR(ObjectDetector):
-    """ RF-DETR Wrapper class.
+    """RF-DETR Wrapper class.
 
     Attributes:
         model: rfdetr model.
     """
 
-    def __init__(self,
-                 names: list,
-                 resolution: Optional[int] = 560,
-                 model_name: Optional[str] = 'rfdetr_base',
-                 weights_path: Optional[str] = None,
-                 visualize: bool = False,
-                 threshold: float = 0.5):
-        """ Initializes a RF-DETR object.
+    def __init__(
+        self,
+        names: list,
+        resolution: Optional[int] = 560,
+        model_name: Optional[str] = "rfdetr_base",
+        weights_path: Optional[str] = None,
+        visualize: bool = False,
+        threshold: float = 0.5,
+    ):
+        """Initializes a RF-DETR object.
 
         Args:
             weights_path: str path to model weights.
@@ -35,16 +37,15 @@ class RFDETR(ObjectDetector):
         super().__init__(weights_path=weights_path, names=names, image_shape=resolution, visualize=visualize)
         self.threshold = threshold
 
-        if model_name == 'rfdetr_base':
+        if model_name == "rfdetr_base":
             self.model = RFDETRBase(resolution=resolution)
-        elif model_name == 'rfdetr_large':
+        elif model_name == "rfdetr_large":
             self.model = RFDETRLarge(resolution=resolution, device="cuda")
         else:
             raise NotImplementedError(f"Custom weight loading currently not supported for RF-DETR.")
 
-
     def detect(self, image: np.ndarray) -> Tuple[list, list, list]:
-        """ Runs inference over an input image.
+        """Runs inference over an input image.
 
         Args:
             image: input image

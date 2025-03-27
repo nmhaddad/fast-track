@@ -1,4 +1,4 @@
-""" Initializes the dtypes module. """
+"""Initializes the dtypes module."""
 
 from .strack import STrack
 from .track_state import TrackState

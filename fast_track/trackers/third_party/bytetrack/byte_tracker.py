@@ -11,16 +11,17 @@ from ...object_tracker import ObjectTracker
 
 
 class BYTETracker(ObjectTracker):
-
-    def __init__(self,
-                 track_thresh: float = 0.5,
-                 track_buffer: int = 30,
-                 match_thresh: float = 0.8,
-                 mot20: bool = False,
-                 frame_rate: int = 30,
-                 aspect_ratio_thresh: float = 1.6,
-                 min_box_area: int = 10,
-                 **kwargs: Any):
+    def __init__(
+        self,
+        track_thresh: float = 0.5,
+        track_buffer: int = 30,
+        match_thresh: float = 0.8,
+        mot20: bool = False,
+        frame_rate: int = 30,
+        aspect_ratio_thresh: float = 1.6,
+        min_box_area: int = 10,
+        **kwargs: Any,
+    ):
         super().__init__(**kwargs)
 
         self.tracked_stracks: List[STrack] = []
@@ -80,13 +81,15 @@ class BYTETracker(ObjectTracker):
         class_ids_second = class_ids[inds_second]
 
         if len(dets) > 0:
-            '''Detections'''
-            detections = [STrack(STrack.tlbr_to_tlwh(tlbr), s, class_id) for
-                          (tlbr, s, class_id) in zip(dets, scores_keep, class_ids_keep)]
+            """Detections"""
+            detections = [
+                STrack(STrack.tlbr_to_tlwh(tlbr), s, class_id)
+                for (tlbr, s, class_id) in zip(dets, scores_keep, class_ids_keep)
+            ]
         else:
             detections = []
 
-        ''' Add newly detected tracklets to tracked_stracks'''
+        """ Add newly detected tracklets to tracked_stracks"""
         unconfirmed = []
         tracked_stracks = []  # type: list[STrack]
         for track in self.tracked_stracks:
@@ -95,7 +98,7 @@ class BYTETracker(ObjectTracker):
             else:
                 tracked_stracks.append(track)
 
-        ''' Step 2: First association, with high score detection boxes'''
+        """ Step 2: First association, with high score detection boxes"""
         strack_pool = joint_stracks(tracked_stracks, self.lost_stracks)
         # Predict the current location with KF
         STrack.multi_predict(strack_pool)
@@ -114,12 +117,14 @@ class BYTETracker(ObjectTracker):
                 track.re_activate(det, self.frame_id, new_id=False)
                 refind_stracks.append(track)
 
-        ''' Step 3: Second association, with low score detection boxes'''
+        """ Step 3: Second association, with low score detection boxes"""
         # association the untrack to the low score detections
         if len(dets_second) > 0:
-            '''Detections'''
-            detections_second = [STrack(STrack.tlbr_to_tlwh(tlbr), s, class_id) for
-                          (tlbr, s, class_id) in zip(dets_second, scores_second, class_ids_second)]
+            """Detections"""
+            detections_second = [
+                STrack(STrack.tlbr_to_tlwh(tlbr), s, class_id)
+                for (tlbr, s, class_id) in zip(dets_second, scores_second, class_ids_second)
+            ]
         else:
             detections_second = []
         r_tracked_stracks = [strack_pool[i] for i in u_track if strack_pool[i].state == TrackState.Tracked]
@@ -141,7 +146,7 @@ class BYTETracker(ObjectTracker):
                 track.mark_lost()
                 lost_stracks.append(track)
 
-        '''Deal with unconfirmed tracks, usually tracks with only one beginning frame'''
+        """Deal with unconfirmed tracks, usually tracks with only one beginning frame"""
         detections = [detections[i] for i in u_detection]
         dists = matching.iou_distance(unconfirmed, detections)
         if not self.mot20:
@@ -187,7 +192,7 @@ class BYTETracker(ObjectTracker):
         return self._get_track_messages()
 
     def _get_track_messages(self) -> List[Dict[str, Any]]:
-        """ Gets a list of track messages.
+        """Gets a list of track messages.
 
         Returns:
             A list of track messages.
@@ -215,7 +220,16 @@ class BYTETracker(ObjectTracker):
                 x2 = min(frame.shape[1], tx1 + tw)
                 y2 = min(frame.shape[0], ty1 + th)
 
-                cv2.putText(frame, f'{self.names[cid]} : {str(tid)}', (tx1, ty1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, self.class_colors[cid], thickness, cv2.LINE_AA)
+                cv2.putText(
+                    frame,
+                    f"{self.names[cid]} : {str(tid)}",
+                    (tx1, ty1 - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1,
+                    self.class_colors[cid],
+                    thickness,
+                    cv2.LINE_AA,
+                )
                 cv2.rectangle(frame, (x1, y1), (x2, y2), self.class_colors[cid], thickness)
 
                 det = frame[y1:y2, x1:x2, :].copy()

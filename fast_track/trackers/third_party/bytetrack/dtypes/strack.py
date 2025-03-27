@@ -1,4 +1,4 @@
-""" STrack class. """
+"""STrack class."""
 
 import numpy as np
 
@@ -7,11 +7,9 @@ from .base_track import BaseTrack, TrackState
 
 
 class STrack(BaseTrack):
-
     shared_kalman = KalmanFilter()
 
     def __init__(self, tlwh, score, class_id):
-
         # wait activate
         self._tlwh = np.asarray(tlwh, dtype=np.float)
         self.kalman_filter = None
@@ -85,8 +83,7 @@ class STrack(BaseTrack):
         self.tracklet_len += 1
 
         new_tlwh = new_track.tlwh
-        self.mean, self.covariance = self.kalman_filter.update(
-            self.mean, self.covariance, self.tlwh_to_xyah(new_tlwh))
+        self.mean, self.covariance = self.kalman_filter.update(self.mean, self.covariance, self.tlwh_to_xyah(new_tlwh))
         self.state = TrackState.Tracked
         self.is_activated = True
 
@@ -94,7 +91,7 @@ class STrack(BaseTrack):
         self.update_class_id(new_track.class_id)
 
     def update_class_id(self, class_id: int) -> None:
-        """ Update class id to max count of class id history.
+        """Update class id to max count of class id history.
 
         Args:
             class_id: class id.
@@ -103,7 +100,7 @@ class STrack(BaseTrack):
         self.class_id = max(self.class_id_history, key=self.class_id_history.get)
 
     def update_crops(self, frame: np.ndarray) -> None:
-        """ Update crops.
+        """Update crops.
 
         Args:
             frame: frame.
@@ -120,7 +117,7 @@ class STrack(BaseTrack):
     # @jit(nopython=True)
     def tlwh(self):
         """Get current position in bounding box format `(top left x, top left y,
-                width, height)`.
+        width, height)`.
         """
         if self.mean is None:
             return self._tlwh.copy()

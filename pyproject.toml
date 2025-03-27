@@ -55,3 +55,6 @@ gradio = [
 exclude = ["config", "media", "models", "src"]
 namespaces = false
 
+[tool.ruff]
+line-length = 120
+
