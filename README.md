@@ -8,7 +8,7 @@ Installable Python package for object tracking pipelines with RF-DETR, YOLOv9, Y
 
 ## Installation:
 
-Package is installable with Python 3.9, and 3.10
+Package is installable with Python 3.10, 3.11, and 3.12
 
 1. `git clone <repo> && cd <repo>`
 1. `pip install .`
@@ -22,16 +22,11 @@ Package is installable with Python 3.9, and 3.10
     ```
     import cv2
     import yaml
-    from dotenv import load_dotenv
 
     from fast_track import Pipeline
-
-    # from fast_track.detectors import YOLOv9ONNX
     from fast_track.detectors import RFDETR
     from fast_track.trackers import BYTETracker
     from fast_track.databases import SQLDatabase
-
-    load_dotenv()
 
 
     with open("config/rf-detr.yml", "r") as f:
