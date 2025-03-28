@@ -222,7 +222,7 @@ class BYTETracker(ObjectTracker):
 
                 cv2.putText(
                     frame,
-                    f"{self.names[cid]} : {str(tid)}",
+                    f"{self.names[cid]} {str(tid)}",
                     (tx1, ty1 - 10),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     1,

@@ -1,18 +1,21 @@
 
-data_path: data/nba_Trim.mp4
-outfile: nba-5-13_out.mp4
+data_path: data/hainan.mp4
+outfile: hainan_out.mp4
 
 
 detector:
   visualize: False
   weights_path: null
+  resolution: 560
   model_name: rfdetr_large
+  device: "cuda"
+  threshold: 0.35
 
 
 tracker:
   visualize: True
-  track_thresh: 0.5
-  track_buffer: 30
+  track_thresh: 0.4
+  track_buffer: 60
   match_thresh: 0.8
   mot20: False
   frame_rate: 30
@@ -21,7 +24,7 @@ tracker:
 
 
 db:
-  db_uri: sqlite:///data/nba_Trim.db
+  db_uri: sqlite:///data/hainan.db
   use_gpt4v_captions: True
 
 names:

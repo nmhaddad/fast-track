@@ -66,5 +66,5 @@ def generate_frame_caption(frame_base64: str, model: str = "gpt-4-vision-preview
         logger.info("generate_frame_caption | response received")
         return response.choices[0].message.content
     except Exception as e:
-        logger.warning(f"generate_frame_caption | error: {e}")
+        logger.warning(f"generate_frame_caption | warning: {e}")
         return None

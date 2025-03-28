@@ -3,10 +3,11 @@
 ## Known Issues:
 - None
 
-## v1.2.0 - Nate Haddad, 3/26/2025
-- Add `RTDETR` to `detectors`
+## v1.2.0 - Nate Haddad, 3/27/2025
+- Add `RFDETR` to `detectors`
 - Update Python packages and versions
 - Add ruff formatting
+- Minor refactor
 
 ## v1.1.1 - Nate Haddad, 2/25/2024
 - Add support for class selection (fixes bug)

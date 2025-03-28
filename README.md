@@ -13,6 +13,8 @@ Package is installable with Python 3.9, and 3.10
 1. `git clone <repo> && cd <repo>`
 1. `pip install .`
 1. To use ByteTrack object tracking, run: `pip install .[bytetrack]`
+1. To use GPU-enabled ONNX-runtime, run: `pip install .[gpu]`
+1. To use YOLO-NAS object detection, run: `pip install .[yolonas]`
 
 ## Running:
 
@@ -81,11 +83,13 @@ Author: Nate Haddad - nhaddad2112[at]gmail[dot]com
 ## License:
 [See LICENSE.txt](LICENSE.txt)
 
-[See YOLO-NAS LICENSE.md](fast_track/object_detection/third_party/yolo_nas/LICENSE.md)
+[See YOLO-NAS LICENSE.md](fast_track/detectors/third_party/yolo_nas/LICENSE.md)
 
 [See YOLO-NAS LICENSE.YOLONAS.md](LICENSE.YOLONAS.md)
 
 [See YOLOv8 LICENSE.YOLOv8.txt](LICENSE.YOLOv8.txt)
+
+[See RF-DETR LICENSE.txt](fast_track/detectors/third_party/rfdetr/LICENSE.txt)
 
 ## References:
 [1] Jocher, Glenn; "YOLOv8 in PyTorch > ONNX > CoreML > TFLite"; https://github.com/ultralytics/; 2023; [Online]. Available: https://github.com/ultralytics/ultralytics 
@@ -99,3 +103,5 @@ Author: Nate Haddad - nhaddad2112[at]gmail[dot]com
 [5] Aharon, Shay and Louis-Dupont and Ofri Masad and Yurkova, Kate and Lotem Fridman and Lkdci and Khvedchenya, Eugene and Rubin, Ran and Bagrov, Natan and Tymchenko, Borys and Keren, Tomer and Zhilko, Alexander and Eran-Deci; "Super-Gradients"; https://github.com/Deci-AI/super-gradients; 2023; [Online]. Available: https://github.com/Deci-AI/super-gradients
 
 [6] Wang, Chien-Yao and Liao, Hong-Yuan Mark; "YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information"; https://github.com/WongKinYiu/yolov9; 2024; [Online]. Available: https://github.com/WongKinYiu/yolov9
+
+[7] Robinson, Isaac and Robicheaux, Peter and Popov, Matvei; "RF-DETR"; https://github.com/roboflow/rf-detr; 2025; [Online]. Available: https://github.com/roboflow/rf-detr

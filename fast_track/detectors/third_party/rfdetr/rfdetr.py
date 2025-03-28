@@ -37,14 +37,26 @@ class RFDETR(ObjectDetector):
             device: device to run the model on.
         """
         super().__init__(weights_path=weights_path, names=names, image_shape=resolution, visualize=visualize)
+        self.resolution = resolution
+        self.model_name = model_name
+        self.weights_path = weights_path
+        self.device = device
         self.threshold = threshold
+        self.model = None
 
-        if model_name == "rfdetr_base":
-            self.model = RFDETRBase(resolution=resolution)
-        elif model_name == "rfdetr_large":
-            self.model = RFDETRLarge(resolution=resolution, device=device)
+        self.initialize_model()
+
+    def initialize_model(self) -> None:
+        """Initializes the model."""
+        params = {"resolution": self.resolution, "device": self.device}
+        if self.weights_path:
+            params["pretrain_weights"] = self.weights_path
+        if self.model_name == "rfdetr_base":
+            self.model = RFDETRBase(**params)
+        elif self.model_name == "rfdetr_large":
+            self.model = RFDETRLarge(**params)
         else:
-            raise NotImplementedError(f"Custom weight loading currently not supported for RF-DETR.")
+            raise ValueError(f"RFDETR | model_name: {self.model_name} architecture not supported")
 
     def detect(self, image: np.ndarray) -> Tuple[list, list, list]:
         """Runs inference over an input image.
