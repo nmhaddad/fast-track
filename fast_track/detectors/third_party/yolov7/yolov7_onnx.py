@@ -1,4 +1,4 @@
-""" YOLOv7ONNX detector wrapper """
+"""YOLOv7ONNX detector wrapper"""
 
 from typing import Tuple, List
 
@@ -8,7 +8,7 @@ from ...object_detector_onnx import ObjectDetectorONNX
 
 
 class YOLOv7ONNX(ObjectDetectorONNX):
-    """ YOLOv7ONNX detector.
+    """YOLOv7ONNX detector.
 
     Attributes:
         weights_path: path to pretrained weights.
@@ -21,11 +21,8 @@ class YOLOv7ONNX(ObjectDetectorONNX):
         output_names: model output names.
     """
 
-    def __init__(self, weights_path: str,
-                 names: List[str],
-                 image_shape: Tuple[int, int],
-                 visualize: bool = False):
-        """ Init YOLOv7 objects with given parameters.
+    def __init__(self, weights_path: str, names: List[str], image_shape: Tuple[int, int], visualize: bool = False):
+        """Init YOLOv7 objects with given parameters.
 
         Args:
             weights_path. path to pretrained weights.
@@ -35,9 +32,8 @@ class YOLOv7ONNX(ObjectDetectorONNX):
         """
         super().__init__(weights_path, names, image_shape, visualize)
 
-    def postprocess(self,
-                    tensor: np.ndarray) -> Tuple[list, list, list]:
-        """ Postprocesses output.
+    def postprocess(self, tensor: np.ndarray) -> Tuple[list, list, list]:
+        """Postprocesses output.
 
         Args:
             tensor: output tensor from ONNX session.

@@ -1,6 +1,6 @@
-""" Version for camera_perception package """
+"""Version for camera_perception package"""
 
 from importlib import metadata
 
 
-__version__ = metadata.version('fast_track')
+__version__ = metadata.version("fast_track")

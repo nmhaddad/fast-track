@@ -1,4 +1,4 @@
-""" YOLOv8ONNX detector wrapper """
+"""YOLOv8ONNX detector wrapper"""
 
 from typing import List, Optional, Tuple, Union
 
@@ -10,7 +10,7 @@ from ...object_detector_onnx import ObjectDetectorONNX
 
 
 class YOLOv8ONNX(ObjectDetectorONNX):
-    """ YOLOv8 ONNX detector.
+    """YOLOv8 ONNX detector.
 
     Attributes:
         weights_path: path to pretrained weights.
@@ -35,19 +35,21 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         nm: The number of masks output by the model.
     """
 
-    def __init__(self,
-                 weights_path: str,
-                 names: List[str],
-                 image_shape: Tuple[int, int],
-                 visualize: bool = False,
-                 conf_thres: float = 0.25,
-                 iou_thres: float = 0.45,
-                 classes: Optional[List[int]] = None,
-                 agnostic: bool = False,
-                 multi_label: bool = False,
-                 labels: List[List[Union[int, float, torch.Tensor]]] = (),
-                 max_det: int = 300):
-        """ Init YOLOv8 objects with given parameters.
+    def __init__(
+        self,
+        weights_path: str,
+        names: List[str],
+        image_shape: Tuple[int, int],
+        visualize: bool = False,
+        conf_thres: float = 0.25,
+        iou_thres: float = 0.45,
+        classes: Optional[List[int]] = None,
+        agnostic: bool = False,
+        multi_label: bool = False,
+        labels: List[List[Union[int, float, torch.Tensor]]] = (),
+        max_det: int = 300,
+    ):
+        """Init YOLOv8 objects with given parameters.
 
         Args:
             weights_path. path to pretrained weights.
@@ -77,7 +79,7 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         self.max_det = max_det
 
     def postprocess(self, tensor: np.ndarray) -> Tuple[list, list, list]:
-        """ Postprocesses output.
+        """Postprocesses output.
 
         Args:
             tensor: output tensor from ONNX session.
@@ -85,14 +87,16 @@ class YOLOv8ONNX(ObjectDetectorONNX):
         Returns:
             Postprocessed output as a tuple of class_ids, scores, and boxes.
         """
-        predictions = ops.non_max_suppression(torch.tensor(tensor[0]),
-                                              conf_thres=self.conf_thresh,
-                                              iou_thres=self.iou_thresh,
-                                              classes=self.classes,
-                                              agnostic=self.agnostic,
-                                              multi_label=self.multi_label,
-                                              labels=self.labels,
-                                              max_det=self.max_det)
+        predictions = ops.non_max_suppression(
+            torch.tensor(tensor[0]),
+            conf_thres=self.conf_thresh,
+            iou_thres=self.iou_thresh,
+            classes=self.classes,
+            agnostic=self.agnostic,
+            multi_label=self.multi_label,
+            labels=self.labels,
+            max_det=self.max_det,
+        )
         boxes = predictions[0][:, :4].int().numpy()
         class_ids = predictions[0][:, 5:6].int().flatten().tolist()
         scores = predictions[0][:, 4:5].flatten().tolist()

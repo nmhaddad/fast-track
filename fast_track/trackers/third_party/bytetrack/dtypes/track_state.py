@@ -1,4 +1,4 @@
-""" TrackState Enum """
+"""TrackState Enum"""
 
 
 class TrackState(object):
